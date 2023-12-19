@@ -1,0 +1,18 @@
+	; OLD TFT PINOUT
+	; D0 - D7 : A0 - A7
+	; LCD_RST : A8
+	; LCD_CS : A9
+	; LCD_RS : A10
+	; LCD_WR : A11 
+	; LCD_RD : A12
+
+;new
+
+; ENG AYMAN TFT PINOUT (CURRENT PINOUT)
+
+;RD = PB9		Read pin	--> to read from touch screen input 
+;WR = PB8		Write pin	--> to write data/command to display
+;RS = PB7		Command pin	--> to choose command or data to write
+;CS = PB6		Chip Select	--> to enable the TFT, lol	(active low)
+;RST= PB15		Reset		--> to reset the TFT (active low)
+;D0-7 = PA0-7		Data BUS	--> Put your command or data on this bus
