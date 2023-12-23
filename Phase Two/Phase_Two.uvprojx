@@ -385,9 +385,29 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>BreakoutPhaseOne.s</FileName>
+              <FileName>Welcome.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\BreakoutPhaseOne.s</FilePath>
+              <FilePath>.\Welcome.s</FilePath>
+            </File>
+            <File>
+              <FileName>Breakout.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\Breakout.s</FilePath>
+            </File>
+            <File>
+              <FileName>TFT_Lib.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\TFT_Lib.s</FilePath>
+            </File>
+            <File>
+              <FileName>DEFINITIONS.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\DEFINITIONS.s</FilePath>
+            </File>
+            <File>
+              <FileName>SpaceInvaders.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\SpaceInvaders.s</FilePath>
             </File>
           </Files>
         </Group>
