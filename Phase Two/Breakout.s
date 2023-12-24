@@ -23,7 +23,7 @@ main_Breakout FUNCTION
 	;AND R1, R1, R2
 	;CMP R1, #0
 	;BNE MAINLOOP
-	
+	BL INITIALIZE_VARIABLES
 	BL DRAW_BLOCKS
 	bl Draw_Platform
 	bl Draw_Border
@@ -45,11 +45,38 @@ main_Breakout FUNCTION
 	LDR R10, =WHITE
 	BL Draw_Score_Board_Zero	
 	;B MAINLOOP
-Stop_Breakout
-	B Stop_Breakout
-	POP {R0-R12, PC}
-    ENDFUNC
+gameLoop
+		; ODR
+		LDR R0, =GPIOA_ODR
+		ldrh r2, [r0]
+		ORR r2, #0x0F00
+		STR R2, [R0]
+		;buttons def
+		mov r0, #0
+		mov r1, #0
+		mov r2, #0x0B00	; PA10 input
+		mov r3, #0x0D00 ; PA9 input
+		mov r4, #0x0E00 ; PA8 input
+		; get input
+		ldr r0, =GPIOA_IDR
+		ldr r1, [r0]
+		AND r1, r1, #0x0F00
+		CMP r1, r2
+		beq left
+		;cmp r1 , r4
+		;beq right
+
+		B gameLoop
+left
+			bl MOVE_SPRITE_LEFT
+			b gameLoop
 	
+
+Stop_Breakout
+		B Stop_Breakout
+		POP {R0-R12, PC}
+		ENDFUNC
+		
 ;############
 
 DRAW_BLOCKS FUNCTION
@@ -158,16 +185,82 @@ DRAW_BALL FUNCTION
 	ENDFUNC
 ;##################################
 Draw_Platform FUNCTION
-	PUSH {r0-r4,r10, LR}
-	
-	mov R0, #221		; HEIGHT Y1
-	MOV R1, #150		; WIDTH X1
-	MOV R3, #225		; HEIGHT Y2
+	PUSH {r0-r6,r10, LR}
+	ldr r5, =SPRITE_Y
+	ldr r6 , =SPRITE_X
+	ldrh r0 , [r5]
+	ldrh r1 , [r6]
+	;mov R0, #221		; HEIGHT Y1
+	;MOV R1, #150		; WIDTH X1
+	ADD R3,R0 , #4		; HEIGHT Y2
 	ADD R4,R1,#47   	;WIDTH X2
 	LDR R10, =WHITE
 	BL DRAW_RECTANGLE_FILLED
-	POP {r0-r4,r10, PC}
+	POP {r0-r6,r10, PC}
 	ENDFUNC
+;###############
+MOVE_SPRITE_LEFT	FUNCTION
+	PUSH{R0-R12,LR}
+	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
+	
+	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
+	
+	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
+	
+	;black
+	ldr r5, =SPRITE_X
+	ldr r6 , =SPRITE_Y
+	ldrh r0 , [r5]
+	ldrh r1 , [r6]
+	ldr r7 , =0
+	cmp r0 ,r7 
+	beq cancelmov
+	
+	add r3 , r0 ,#4
+	add r4 ,r1, #47
+	LDR R10, =BLACK
+	
+	bl DRAW_RECTANGLE_FILLED
+	
+	ldr r5, =SPRITE_X
+	ldr r6 , =SPRITE_Y
+	ldrh r0 , [r5]
+	ldrh r1 , [r6]
+	subs r0 ,r0 , #10
+	
+	; left
+	add r3 , r0 ,#4
+	add r4 ,r1, #47
+	LDR R10, =WHITE
+	
+	bl DRAW_RECTANGLE_FILLED
+	strh r0, [r5]  
+cancelmov
+
+	POP{R0-R12,PC}
+	ENDFUNC
+;##############
+INITIALIZE_VARIABLES	FUNCTION
+	PUSH{R0-R12,LR}
+	;THIS FUNCTION JUST INITIALIZES ANY VARIABLE IN THE DATASECTION TO ITS INITIAL VALUES
+	;ALTHOUGH WE SPECIFIED SOME VALUES IN THE DATA AREA, BUT THEIR VALUES MIGHT BE ALTERED DURING BOOT TIME.
+	;SO WE NEED TO IMPLEMENT THIS FUNCTION THAT REINITIALIZES ALL VARIABLES
+	ldr r0 , =SPRITE_X
+	ldr r1 , [r0]
+	mov r1 , #150
+	str r1, [r0]
+	ldr r0 , =SPRITE_Y
+	ldr r1 , [r0]
+	mov r1 , #221
+	str r1, [r0]
+	;TODO: INITIALIZE STARTING_X TO 150, NOTICE THAT STARTING_X IS DECLARED AS 16-BITS
+	
+	
+	;TODO: INITIALIZE STARTING_Y TO 170, NOTICE THAT STARTING_Y IS DECLARED AS 16-BITS
+	
+	POP{R0-R12,PC}
+	ENDFUNC
+	
 ;##############
 Draw_Border FUNCTION
 	PUSH {r0-r4, LR}

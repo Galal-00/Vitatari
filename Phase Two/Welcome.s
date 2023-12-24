@@ -26,6 +26,7 @@ __main FUNCTION
 	mov r4, #0x0E00 ; PA8 input
 
 ;4 2 1, 0 if all connected
+; right button invaders , left btn breakout
 WelcomeLOOP
 	
 	ldr r0, =GPIOA_IDR
