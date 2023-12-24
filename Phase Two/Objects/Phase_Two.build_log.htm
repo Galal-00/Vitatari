@@ -5,7 +5,7 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.38.0.0
 Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Hussein Essam, cufe, LIC=----
+License Information: Ezz Selim, Cairo university - student, LIC=----
  
 Tool Versions:
 Toolchain:       MDK-Lite  Version: 5.38.0.0
@@ -21,16 +21,54 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.1.0.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-C:\Users\Hussein Essam\OneDrive\Desktop\CCEC Junior\micro project\Vitatari\Phase Two\Phase_Two.uvprojx
+C:\Users\gihad\Vitatari\Phase Two\Phase_Two.uvprojx
 Project File Date:  12/24/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
-Build target 'Target 1'
+Rebuild target 'Target 1'
+assembling TFT_Lib.s...
+assembling Breakout.s...
+"SpaceInvaders.s", line 86: Warning: A1488W: PROC/FUNC at line 62 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+    included by GET/INCLUDE directive from "Welcome.s", line 2
+   86 0000009e DRAW_S_BULLET FUNCTION
+"SpaceInvaders.s", line 272: Warning: A1488W: PROC/FUNC at line 250 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+    included by GET/INCLUDE directive from "Welcome.s", line 2
+  272 00000296 DEL_GREEN_GOBLIN FUNCTION
+"Welcome.s", line 138: Warning: A1581W: Added 2 bytes of padding at address 0xda
+  138 000000dc  END
+0 Errors, 3 Warnings
+assembling Welcome.s...
+assembling DEFINITIONS.s...
+"SpaceInvaders.s", line 86: Warning: A1488W: PROC/FUNC at line 62 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+   86 0000009e DRAW_S_BULLET FUNCTION
+"SpaceInvaders.s", line 272: Warning: A1488W: PROC/FUNC at line 250 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+  272 00000296 DEL_GREEN_GOBLIN FUNCTION
+0 Errors, 2 Warnings
+assembling SpaceInvaders.s...
+assembling startup_stm32f10x_md.s...
+RTE/Device/STM32F103C8/system_stm32f10x.c(64): warning: In file included from...
+C:/Users/gihad/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include\stm32f10x.h(18): warning: invalid UTF-8 in comment [-Winvalid-utf8]
+  *              - To use or not the peripheral<92>s drivers in application code(i.e. 
+                                               ^
+C:/Users/gihad/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include\stm32f10x.h(19): warning: invalid UTF-8 in comment [-Winvalid-utf8]
+  *                code will be based on direct access to peripheral<92>s registers 
+                                                                    ^
+C:/Users/gihad/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include\stm32f10x.h(26): warning: invalid UTF-8 in comment [-Winvalid-utf8]
+  *           - Macros to access peripheral<92>s registers hardware
+                                           ^
+RTE/Device/STM32F103C8/system_stm32f10x.c(166): warning: no previous extern declaration for non-static variable 'AHBPrescTable' [-Wmissing-variable-declarations]
+__I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
+            ^
+RTE/Device/STM32F103C8/system_stm32f10x.c(166): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+__I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
+    ^
+4 warnings generated.
+compiling system_stm32f10x.c...
 linking...
-Program Size: Code=2772 RO-data=240 RW-data=0 ZI-data=1536  
+Program Size: Code=2972 RO-data=236 RW-data=8 ZI-data=1536  
 FromELF: creating hex file...
-".\Objects\Phase_Two.axf" - 0 Error(s), 0 Warning(s).
+".\Objects\Phase_Two.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -49,8 +87,8 @@ Package Vendor: Keil
 <h2>Collection of Component include folders:</h2>
   ./RTE/Device/STM32F103C8
   ./RTE/_Target_1
-  C:/Users/Hussein Essam/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
-  C:/Users/Hussein Essam/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include
+  C:/Users/gihad/AppData/Local/Arm/Packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include
+  C:/Users/gihad/AppData/Local/Arm/Packs/Keil/STM32F1xx_DFP/2.4.1/Device/Include
 
 <h2>Collection of Component Files used:</h2>
 
@@ -58,10 +96,10 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:1.0.0
       Source file:   Device/Source/ARM/startup_stm32f10x_md.s
-      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
-      Source file:   Device/Source/system_stm32f10x.c
       Include file:  RTE_Driver/Config/RTE_Device.h
-Build Time Elapsed:  00:00:00
+      Source file:   Device/Source/system_stm32f10x.c
+      Source file:   Device/Source/ARM/STM32F1xx_OPT.s
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
