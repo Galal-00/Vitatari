@@ -62,6 +62,13 @@ WHITE 	EQU  	0xFFFF
 GREEN2 	EQU 	0x2FA4
 CYAN2 	EQU  	0x07FF
 
+;## BreakOut Consts
+PlatformWidth EQU 47
+PlatformHeight EQU 4
+
+SPRITE_X	DCW		150
+SPRITE_Y	DCW		221
+	
 	
 	
 	END
