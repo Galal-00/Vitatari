@@ -548,7 +548,30 @@ DelayInner_Loop
     
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
+	
+	
+delay_half_second FUNCTION
+    PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
+    LDR R0, =INTERVAL           ; Load the delay count
+DelayInner_Loop_HALF
+        SUBS R0, #2             ; Decrement the delay count
+		cmp	R0, #0
+        BGT DelayInner_Loop_HALF     ; Branch until the count becomes zero
+    
+    POP {R0-R12, PC}                ; Pop R4 and return from subroutine
+	ENDFUNC
 
+delay_quarter_second FUNCTION
+    PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
+    LDR R0, =INTERVAL           ; Load the delay count
+DelayInner_Loop_quarter
+        SUBS R0, #4             ; Decrement the delay count
+		cmp	R0, #0
+        BGT DelayInner_Loop_quarter     ; Branch until the count becomes zero
+    
+    POP {R0-R12, PC}                ; Pop R4 and return from subroutine
+	ENDFUNC
+	
 delay_10_MILLIsecond FUNCTION
     PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
     LDR R0, =INTERVAL           ; Load the delay count
