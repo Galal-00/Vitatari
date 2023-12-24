@@ -1,4 +1,3 @@
-	
 	INCLUDE SpaceInvaders.s
 	AREA WELCOME_CODE, CODE, READONLY
 
@@ -24,26 +23,26 @@ __main FUNCTION
 	mov r2, #0x0B00	; PA10 input
 	mov r3, #0x0D00 ; PA9 input
 	mov r4, #0x0E00 ; PA8 input
-
+	BL main_Space
 ;4 2 1, 0 if all connected
 ; right button invaders , left btn breakout
-WelcomeLOOP
-	
-	ldr r0, =GPIOA_IDR
-	ldr r1, [r0]
-	AND r1, r1, #0x0F00
-	CMP r1, r2
-	BEQ breakout
-	CMP r1, r3
-	BEQ spaceInvaders
-	
-	
-	B WelcomeLOOP
-breakout
-	BL main_Breakout
-	B Stop
-spaceInvaders
-	BL main_Space
+;WelcomeLOOP
+;	
+;	ldr r0, =GPIOA_IDR
+;	ldr r1, [r0]
+;	AND r1, r1, #0x0F00
+;	CMP r1, r2
+;	BEQ breakout
+;	CMP r1, r3
+;	BEQ spaceInvaders
+;	
+;	
+;	B WelcomeLOOP
+;breakout
+;	BL main_Breakout
+;	B Stop
+;spaceInvaders
+;	BL main_Space
 	B Stop
 Stop
 

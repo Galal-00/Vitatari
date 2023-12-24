@@ -72,9 +72,9 @@ SPRITE_Y	DCW		221
 SPACE_X		DCW		250
 SPACE_Y		DCW		200
 
-BULLET_MEMORY DCW	0, 0
-					0, 0
-					0, 0
+BULLET_MEMORY 	DCW	0, 0
+				DCW	0, 0
+				DCW	0, 0
 				
 	
 	

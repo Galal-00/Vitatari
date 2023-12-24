@@ -27,24 +27,29 @@ Project File Date:  12/24/2023
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-assembling TFT_Lib.s...
 assembling Breakout.s...
-"SpaceInvaders.s", line 86: Warning: A1488W: PROC/FUNC at line 62 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
-    included by GET/INCLUDE directive from "Welcome.s", line 2
-   86 0000009e DRAW_S_BULLET FUNCTION
-"SpaceInvaders.s", line 272: Warning: A1488W: PROC/FUNC at line 250 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
-    included by GET/INCLUDE directive from "Welcome.s", line 2
-  272 00000296 DEL_GREEN_GOBLIN FUNCTION
-"Welcome.s", line 138: Warning: A1581W: Added 2 bytes of padding at address 0xda
-  138 000000dc  END
-0 Errors, 3 Warnings
+assembling TFT_Lib.s...
+"SpaceInvaders.s", line 111: Warning: A1488W: PROC/FUNC at line 87 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+    included by GET/INCLUDE directive from "Welcome.s", line 1
+  111 000000e0 DRAW_S_BULLET FUNCTION
+"SpaceInvaders.s", line 297: Warning: A1488W: PROC/FUNC at line 275 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+    included by GET/INCLUDE directive from "Welcome.s", line 1
+  297 000002d8 DEL_GREEN_GOBLIN FUNCTION
+"SpaceInvaders.s", line 402: Warning: A1581W: Added 2 bytes of padding at address 0x3ee
+    included by GET/INCLUDE directive from "Welcome.s", line 1
+  402 000003f0  LTORG
+"Welcome.s", line 137: Warning: A1581W: Added 2 bytes of padding at address 0xc2
+  137 000000c4  END
+0 Errors, 4 Warnings
 assembling Welcome.s...
 assembling DEFINITIONS.s...
-"SpaceInvaders.s", line 86: Warning: A1488W: PROC/FUNC at line 62 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
-   86 0000009e DRAW_S_BULLET FUNCTION
-"SpaceInvaders.s", line 272: Warning: A1488W: PROC/FUNC at line 250 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
-  272 00000296 DEL_GREEN_GOBLIN FUNCTION
-0 Errors, 2 Warnings
+"SpaceInvaders.s", line 111: Warning: A1488W: PROC/FUNC at line 87 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+  111 000000e0 DRAW_S_BULLET FUNCTION
+"SpaceInvaders.s", line 297: Warning: A1488W: PROC/FUNC at line 275 in 'SpaceInvaders.s' without matching ENDP/ENDFUNC
+  297 000002d8 DEL_GREEN_GOBLIN FUNCTION
+"SpaceInvaders.s", line 402: Warning: A1581W: Added 2 bytes of padding at address 0x3ee
+  402 000003f0  LTORG
+0 Errors, 3 Warnings
 assembling SpaceInvaders.s...
 assembling startup_stm32f10x_md.s...
 RTE/Device/STM32F103C8/system_stm32f10x.c(64): warning: In file included from...
@@ -66,7 +71,7 @@ __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9}
 4 warnings generated.
 compiling system_stm32f10x.c...
 linking...
-Program Size: Code=2972 RO-data=236 RW-data=8 ZI-data=1536  
+Program Size: Code=2552 RO-data=236 RW-data=20 ZI-data=1536  
 FromELF: creating hex file...
 ".\Objects\Phase_Two.axf" - 0 Error(s), 4 Warning(s).
 
@@ -99,7 +104,7 @@ Package Vendor: Keil
       Include file:  RTE_Driver/Config/RTE_Device.h
       Source file:   Device/Source/system_stm32f10x.c
       Source file:   Device/Source/ARM/STM32F1xx_OPT.s
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

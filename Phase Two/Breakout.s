@@ -25,6 +25,7 @@ main_Breakout FUNCTION
 	;BNE MAINLOOP
 	BL INITIALIZE_VARIABLES
 	BL DRAW_BLOCKS
+	LDR R7, =WHITE
 	bl Draw_Platform
 	bl Draw_Border
 	;48 length , 4 width , 
@@ -46,11 +47,6 @@ main_Breakout FUNCTION
 	BL Draw_Score_Board_Zero	
 	;B MAINLOOP
 gameLoop
-		; ODR
-		LDR R0, =GPIOA_ODR
-		ldrh r2, [r0]
-		ORR r2, #0x0F00
-		STR R2, [R0]
 		;buttons def
 		mov r0, #0
 		mov r1, #0
@@ -63,15 +59,18 @@ gameLoop
 		AND r1, r1, #0x0F00
 		CMP r1, r2
 		beq left
-		;cmp r1 , r4
-		;beq right
+		cmp r1 , r3
+		beq right
 
 		B gameLoop
 left
 			bl MOVE_SPRITE_LEFT
+			bl delay_quarter_second
 			b gameLoop
-	
-
+right	
+			bl MOVE_SPRITE_RIGHT
+			bl delay_quarter_second
+			b gameLoop
 Stop_Breakout
 		B Stop_Breakout
 		POP {R0-R12, PC}
@@ -185,7 +184,7 @@ DRAW_BALL FUNCTION
 	ENDFUNC
 ;##################################
 Draw_Platform FUNCTION
-	PUSH {r0-r6,r10, LR}
+	PUSH {r0-r7,r10, LR}
 	ldr r5, =SPRITE_Y
 	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
@@ -194,9 +193,9 @@ Draw_Platform FUNCTION
 	;MOV R1, #150		; WIDTH X1
 	ADD R3,R0 , #4		; HEIGHT Y2
 	ADD R4,R1,#47   	;WIDTH X2
-	LDR R10, =WHITE
+	MOV R10, R7
 	BL DRAW_RECTANGLE_FILLED
-	POP {r0-r6,r10, PC}
+	POP {r0-r7,r10, PC}
 	ENDFUNC
 ;###############
 MOVE_SPRITE_LEFT	FUNCTION
@@ -207,35 +206,67 @@ MOVE_SPRITE_LEFT	FUNCTION
 	
 	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
 	
-	;black
-	ldr r5, =SPRITE_X
-	ldr r6 , =SPRITE_Y
+	;cancel mov cond
+	 
+	
+	
+	ldr r5, =SPRITE_Y
+	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
 	ldrh r1 , [r6]
+	subs r1 ,r1 , #10
 	ldr r7 , =0
-	cmp r0 ,r7 
-	beq cancelmov
+	cmp r1 ,r7
+	ble cancelmov
 	
-	add r3 , r0 ,#4
-	add r4 ,r1, #47
-	LDR R10, =BLACK
+	LDR R7, =BLACK
+	bl Draw_Platform
 	
-	bl DRAW_RECTANGLE_FILLED
 	
-	ldr r5, =SPRITE_X
-	ldr r6 , =SPRITE_Y
+	
+	LDR R7, =WHITE
+	strh r1, [r6]
+	bl Draw_Platform
+	
+	
+	
+cancelmov
+
+	POP{R0-R12,PC}
+	ENDFUNC
+;##############
+MOVE_SPRITE_RIGHT	FUNCTION
+	PUSH{R0-R12,LR}
+	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
+	
+	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
+	
+	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
+	
+	;cancel mov cond
+	 
+	
+
+	
+	ldr r5, =SPRITE_Y
+	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
 	ldrh r1 , [r6]
-	subs r0 ,r0 , #10
+	ADD r1 ,r1 , #10
+	ldr r7 , = 269
+	cmp r1 ,r7
+	bge cancelMovR
+
+	LDR R7, =BLACK
+	bl Draw_Platform
 	
-	; left
-	add r3 , r0 ,#4
-	add r4 ,r1, #47
-	LDR R10, =WHITE
+	LDR R7, =WHITE
+	strh r1, [r6]
+	bl Draw_Platform
 	
-	bl DRAW_RECTANGLE_FILLED
-	strh r0, [r5]  
-cancelmov
+	
+	
+cancelMovR
 
 	POP{R0-R12,PC}
 	ENDFUNC

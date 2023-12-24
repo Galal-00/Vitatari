@@ -17,9 +17,7 @@ main_Space FUNCTION
 	BL DRAW_LEGION
 	
 	; SPACESHIP COORDNIATES
-	B DUMMY2	
-	LTORG
-DUMMY2
+
 	ldr R1, =SPACE_X
 	ldr R7, =SPACE_Y
 	ldrh r2,[r1]
@@ -48,15 +46,42 @@ DUMMY2
 	MOV R5, #120
 	;BL DEL_GREEN_GOBLIN
 
-	
+	LDR R0, =GPIOA_ODR
+	ldrh r2, [r0]
+    ORR r2, #0x0F00
+    STRH R2, [R0]
 SpaceGLoop
-	BL MOVE_SPACE_RIGHT
-	BL delay_1_second
-	BL delay_1_second
-	B SpaceGLoop
+		LDR R0, =GPIOA_ODR
+		ldrh r2, [r0]
+		ORR r2, #0x0F00
+		STRH R2, [R0]
+		;buttons def
+		mov r0, #0
+		mov r1, #0
+		mov r2, #0x0B00	; PA10 input
+		mov r3, #0x0D00 ; PA9 input
+		mov r4, #0x0E00 ; PA8 input
+		; get input
+		ldr r0, =GPIOA_IDR
+		ldr r1, [r0]
+		AND r1, r1, #0x0F00
+		CMP r1, r2
+		beq Spaceleft
+		cmp r1 , r3
+		beq Spaceright
+
+		B SpaceGLoop
+Spaceleft
+			bl MOVE_SPACE_LEFT
+			bl delay_quarter_second
+			b SpaceGLoop
+Spaceright	
+			bl MOVE_SPACE_RIGHT
+			bl delay_quarter_second
+			b SpaceGLoop
 STOP
 	B STOP
-    
+    POP {R0-R12, PC}
     ENDFUNC
 
 DRAW_G_BULLET FUNCTION
@@ -473,6 +498,21 @@ MOVE_SPACE_LEFT	FUNCTION
 	strh r0, [r7]
 
 
+	POP{R0-R12,PC}
+	ENDFUNC	
+;##########################
+SHOOT_SBULLET	FUNCTION
+	PUSH{R0-R12,LR}
+	
+	ldr r7, =SPACE_X
+	ldrh r2, [r7]
+	ADD r2, r2, #10
+	MOV r5,#210
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	
+	
+	
 	POP{R0-R12,PC}
 	ENDFUNC	
 
