@@ -70,7 +70,7 @@ SPRITE_X	DCW		150
 SPRITE_Y	DCW		221
 
 ballX           DCW 144
-ballY           DCW 5
+ballY           DCW 150
 ballVelX        DCW 5  ; Initial velocity in the X direction
 ballVelY        DCW 5   ; Initial velocity in the Y direction
 x_negative		DCW 0

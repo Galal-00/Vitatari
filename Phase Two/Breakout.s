@@ -89,7 +89,48 @@ ballAnimate
 	LDR R10, =BLACK
 	BL DRAW_BALL
     
-	
+; VERTICAL MOVMENT
+    LDR R0, =ballY
+	LDRH R2, [R0]
+    LDR R1, =ballVelY
+	LDRH R3, [R1]
+    ; check collision y
+	ldr r7, =y_negative
+	ldrh r8, [r7]
+	CMP r8, #1
+	BEQ check_y_neg_CMP
+check_y_pos_CMP
+	CMP R2, #220     ; Right wall
+	BGE xNeg
+	ADDS R2, R2, R3
+	B contCompY
+check_y_neg_CMP
+	CMP R2, #50		; Left wall
+	BLE xPos
+    SUBS R2, R2, R3
+	B contCompY
+yNeg
+; set x to be -ve moving
+	ldr r7, =y_negative
+	ldrh r8, [r7]
+	mov r8, #1
+	str r8, [r7]
+	SUBS R2, R2, R3
+	B contCompY
+yPos
+; set x to be +ve moving
+	ldr r7, =y_negative
+	ldrh r8, [r7]
+	mov r8, #0
+	str r8, [r7]
+	ADDS R2, R2, R3
+
+contCompY
+
+	STRH R2, [R0] 
+
+
+
 	LDR R0, =ballX
 	LDRH R2, [R0]
     LDR R1, =ballVelX
@@ -97,7 +138,7 @@ ballAnimate
 	; check collision x
 	ldr r7, =x_negative
 	ldrh r8, [r7]
-	CMP r8, 1
+	CMP r8, #1
 	BEQ check_x_neg_CMP
 check_x_pos_CMP
 	CMP R2, #306     ; Right wall
@@ -130,43 +171,10 @@ contCompX
     STR R2, [R0]
 
 
-; VERTICAL MOVMENT
-    LDR R0, =ballY
-	LDRH R2, [R0]
-    LDR R1, =ballVelY
-	LDRH R3, [R1]
-    ; check collision y
-	ldr r7, =y_negative
-	ldrh r8, [r7]
-	CMP r8, 1
-	BEQ check_y_neg_CMP
-check_y_pos_CMP
-	CMP R2, #306     ; Right wall
-	BGE xNeg
-	ADDS R2, R2, R3
-	B contCompY
-check_y_neg_CMP
-	CMP R2, #9		; Left wall
-	BLE xPos
-    SUBS R2, R2, R3
-	B contCompY
-yNeg
-; set x to be -ve moving
-	ldr r7, =y_negative
-	ldrh r8, [r7]
-	mov r8, #1
-	str r8, [r7]
-	SUBS R2, R2, R3
-	B contCompY
-yPos
-; set x to be +ve moving
-	ldr r7, =y_negative
-	ldrh r8, [r7]
-	mov r8, #0
-	str r8, [r7]
-	ADDS R2, R2, R3
 
 ; VERTICAL MOVMENT
+	LDR R0, =ballX
+	LDRH R2 , [R0]
 	LDR R0, =ballY
 	LDRH R5 , [R0]
 	
@@ -465,7 +473,7 @@ INITIALIZE_VARIABLES	FUNCTION
 	
 	ldr r0 , =ballY
 	ldr r1 , [r0]
-	mov r1 , #5
+	mov r1 , #150
 	str r1, [r0]
 	
 	ldr r0 , =ballVelX
@@ -479,6 +487,11 @@ INITIALIZE_VARIABLES	FUNCTION
 	str r1, [r0]
 
 	ldr r0 , =x_negative
+	ldr r1 , [r0]
+	mov r1 , #0
+	str r1, [r0]
+	
+	ldr r0 , =y_negative
 	ldr r1 , [r0]
 	mov r1 , #0
 	str r1, [r0]
