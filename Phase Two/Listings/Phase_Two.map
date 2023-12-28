@@ -50,7 +50,7 @@ Removing Unused input sections from the image.
     Removing spaceinvaders.o(DEFINTIONS_DATA), (20 bytes).
     Removing spaceinvaders.o(TFTCODE), (660 bytes).
     Removing spaceinvaders.o(BREAKOUT_CODE), (556 bytes).
-    Removing spaceinvaders.o(SPACE_INVADERS), (1188 bytes).
+    Removing spaceinvaders.o(SPACE_INVADERS), (1516 bytes).
     Removing system_stm32f10x.o(.text), (0 bytes).
     Removing system_stm32f10x.o(.ARM.exidx.text.SystemInit), (8 bytes).
     Removing system_stm32f10x.o(.ARM.exidx.text.SetSysClock), (8 bytes).
@@ -60,7 +60,7 @@ Removing Unused input sections from the image.
     Removing system_stm32f10x.o(.data.SystemCoreClock), (4 bytes).
     Removing system_stm32f10x.o(.rodata.AHBPrescTable), (16 bytes).
 
-19 unused section(s) (total 5258 bytes) removed from the image.
+19 unused section(s) (total 5586 bytes) removed from the image.
 
 ==============================================================================
 
@@ -87,34 +87,37 @@ Image Symbol Table
     SetSysClockTo72                          0x0800013d   Thumb Code   290  system_stm32f10x.o(.text.SetSysClockTo72)
     [Anonymous Symbol]                       0x0800013c   Section        0  system_stm32f10x.o(.text.SetSysClockTo72)
     [Anonymous Symbol]                       0x08000260   Section        0  system_stm32f10x.o(.text.SystemInit)
-    main_Space                               0x080002c9   Thumb Code   164  welcome.o(SPACE_INVADERS)
-    SPACE_INVADERS                           0x080002c8   Section     1188  welcome.o(SPACE_INVADERS)
-    DRAW_G_BULLET                            0x0800036d   Thumb Code    60  welcome.o(SPACE_INVADERS)
-    DRAW_S_BULLET                            0x080003a9   Thumb Code    68  welcome.o(SPACE_INVADERS)
-    DRAW_SPACESHIP                           0x080003ed   Thumb Code   392  welcome.o(SPACE_INVADERS)
-    DRAW_LEGION                              0x08000575   Thumb Code    44  welcome.o(SPACE_INVADERS)
-    DRAW_GREEN_GOBLIN                        0x080005bd   Thumb Code   248  welcome.o(SPACE_INVADERS)
-    INITIALIZE_VARIABLES_space               0x080006c9   Thumb Code    28  welcome.o(SPACE_INVADERS)
-    COVER_SPRITE                             0x080006e5   Thumb Code    36  welcome.o(SPACE_INVADERS)
-    MOVE_SPACE_RIGHT                         0x08000709   Thumb Code    32  welcome.o(SPACE_INVADERS)
-    MOVE_SPACE_LEFT                          0x08000729   Thumb Code    32  welcome.o(SPACE_INVADERS)
-    DRAW_RECTANGLE_FILLED                    0x0800076d   Thumb Code    70  welcome.o(TFTCODE)
-    TFTCODE                                  0x0800076c   Section      660  welcome.o(TFTCODE)
-    LCD_WRITE                                0x080007b3   Thumb Code    44  welcome.o(TFTCODE)
-    LCD_COMMAND_WRITE                        0x080007df   Thumb Code    44  welcome.o(TFTCODE)
-    LCD_DATA_WRITE                           0x0800080b   Thumb Code    36  welcome.o(TFTCODE)
-    LCD_INIT                                 0x08000839   Thumb Code   222  welcome.o(TFTCODE)
-    ADDRESS_SET                              0x08000917   Thumb Code    92  welcome.o(TFTCODE)
-    delay_1_second                           0x080009b7   Thumb Code    16  welcome.o(TFTCODE)
-    delay_quarter_second                     0x080009d7   Thumb Code    16  welcome.o(TFTCODE)
-    WELCOME_CODE                             0x08000a00   Section      228  welcome.o(WELCOME_CODE)
-    SETUP                                    0x08000a41   Thumb Code    26  welcome.o(WELCOME_CODE)
-    PORTA_CONF                               0x08000a5b   Thumb Code   104  welcome.o(WELCOME_CODE)
+    main_Space                               0x080002c9   Thumb Code   158  welcome.o(SPACE_INVADERS)
+    SPACE_INVADERS                           0x080002c8   Section     1516  welcome.o(SPACE_INVADERS)
+    DRAW_G_BULLET                            0x08000367   Thumb Code    60  welcome.o(SPACE_INVADERS)
+    DRAW_S_BULLET                            0x080003a3   Thumb Code    68  welcome.o(SPACE_INVADERS)
+    DRAW_SPACESHIP                           0x080003e7   Thumb Code   392  welcome.o(SPACE_INVADERS)
+    DRAW_LEGION                              0x0800056f   Thumb Code    44  welcome.o(SPACE_INVADERS)
+    DRAW_GREEN_GOBLIN                        0x080005b7   Thumb Code   248  welcome.o(SPACE_INVADERS)
+    INITIALIZE_VARIABLES_space               0x080006c1   Thumb Code    46  welcome.o(SPACE_INVADERS)
+    COVER_SPRITE                             0x080006ef   Thumb Code    36  welcome.o(SPACE_INVADERS)
+    MOVE_SPACE_RIGHT                         0x08000713   Thumb Code    40  welcome.o(SPACE_INVADERS)
+    MOVE_SPACE_LEFT                          0x0800073f   Thumb Code    34  welcome.o(SPACE_INVADERS)
+    SHOOT_SBULLET                            0x08000765   Thumb Code   148  welcome.o(SPACE_INVADERS)
+    MOVE_BULLET_UP                           0x080007f9   Thumb Code   174  welcome.o(SPACE_INVADERS)
+    DRAW_RECTANGLE_FILLED                    0x080008b5   Thumb Code    70  welcome.o(TFTCODE)
+    TFTCODE                                  0x080008b4   Section      660  welcome.o(TFTCODE)
+    LCD_WRITE                                0x080008fb   Thumb Code    44  welcome.o(TFTCODE)
+    LCD_COMMAND_WRITE                        0x08000927   Thumb Code    44  welcome.o(TFTCODE)
+    LCD_DATA_WRITE                           0x08000953   Thumb Code    36  welcome.o(TFTCODE)
+    LCD_INIT                                 0x08000981   Thumb Code   222  welcome.o(TFTCODE)
+    ADDRESS_SET                              0x08000a5f   Thumb Code    92  welcome.o(TFTCODE)
+    delay_1_second                           0x08000aff   Thumb Code    16  welcome.o(TFTCODE)
+    delay_quarter_second                     0x08000b1f   Thumb Code    16  welcome.o(TFTCODE)
+    WELCOME_CODE                             0x08000b48   Section      228  welcome.o(WELCOME_CODE)
+    SETUP                                    0x08000b89   Thumb Code    26  welcome.o(WELCOME_CODE)
+    PORTA_CONF                               0x08000ba3   Thumb Code   104  welcome.o(WELCOME_CODE)
     SPRITE_X                                 0x20000000   Data           2  welcome.o(DEFINTIONS_DATA)
     DEFINTIONS_DATA                          0x20000000   Section       20  welcome.o(DEFINTIONS_DATA)
     SPRITE_Y                                 0x20000002   Data           2  welcome.o(DEFINTIONS_DATA)
     SPACE_X                                  0x20000004   Data           2  welcome.o(DEFINTIONS_DATA)
     SPACE_Y                                  0x20000006   Data           2  welcome.o(DEFINTIONS_DATA)
+    BULLET_MEMORY_X                          0x20000008   Data           6  welcome.o(DEFINTIONS_DATA)
     Heap_Mem                                 0x20000018   Data         512  startup_stm32f10x_md.o(HEAP)
     HEAP                                     0x20000018   Section      512  startup_stm32f10x_md.o(HEAP)
     Stack_Mem                                0x20000218   Data        1024  startup_stm32f10x_md.o(STACK)
@@ -187,7 +190,7 @@ Image Symbol Table
     __rt_heap_escrow$2region                 0x0800012f   Thumb Code     2  heapauxi.o(.text)
     __rt_heap_expand$2region                 0x08000131   Thumb Code     2  heapauxi.o(.text)
     SystemInit                               0x08000261   Thumb Code   102  system_stm32f10x.o(.text.SystemInit)
-    __main                                   0x08000a01   Thumb Code    64  welcome.o(WELCOME_CODE)
+    __main                                   0x08000b49   Thumb Code    64  welcome.o(WELCOME_CODE)
 
 
 
@@ -197,9 +200,9 @@ Memory Map of the image
 
   Image Entry point : 0x080000ed
 
-  Load Region LR_1 (Base: 0x08000000, Size: 0x00000af8, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x08000000, Size: 0x00000c40, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000ae4, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000c2c, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -212,19 +215,19 @@ Memory Map of the image
     0x0800025e   0x0800025e   0x00000002   PAD
     0x08000260   0x08000260   0x00000066   Code   RO           56    .text.SystemInit    system_stm32f10x.o
     0x080002c6   0x080002c6   0x00000002   PAD
-    0x080002c8   0x080002c8   0x000004a4   Code   RO            4    SPACE_INVADERS      welcome.o
-    0x0800076c   0x0800076c   0x00000294   Code   RO            2    TFTCODE             welcome.o
-    0x08000a00   0x08000a00   0x000000e4   Code   RO            5  * WELCOME_CODE        welcome.o
+    0x080002c8   0x080002c8   0x000005ec   Code   RO            4    SPACE_INVADERS      welcome.o
+    0x080008b4   0x080008b4   0x00000294   Code   RO            2    TFTCODE             welcome.o
+    0x08000b48   0x08000b48   0x000000e4   Code   RO            5  * WELCOME_CODE        welcome.o
 
 
-    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x08000ae4, Size: 0x00000014, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x08000c2c, Size: 0x00000014, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08000ae4   0x00000014   Data   RW            1    DEFINTIONS_DATA     welcome.o
+    0x20000000   0x08000c2c   0x00000014   Data   RW            1    DEFINTIONS_DATA     welcome.o
 
 
-    Execution Region ER_ZI (Exec base: 0x20000018, Load base: 0x08000af8, Size: 0x00000600, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000018, Load base: 0x08000c40, Size: 0x00000600, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -239,12 +242,12 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-        64         26        236          0       1536        796   startup_stm32f10x_md.o
-       400          0          0          0          0       2853   system_stm32f10x.o
-      2076         76          0         20          0       2488   welcome.o
+        64         26        236          0       1536        800   startup_stm32f10x_md.o
+       400          0          0          0          0       2852   system_stm32f10x.o
+      2404         80          0         20          0       2664   welcome.o
 
     ----------------------------------------------------------------------
-      2544        102        236         20       1536       6137   Object Totals
+      2872        106        236         20       1536       6316   Object Totals
          0          0          0          0          0          0   (incl. Generated)
          4          0          0          0          0          0   (incl. Padding)
 
@@ -274,15 +277,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2552        102        236         20       1536       6133   Grand Totals
-      2552        102        236         20       1536       6133   ELF Image Totals
-      2552        102        236         20          0          0   ROM Totals
+      2880        106        236         20       1536       6312   Grand Totals
+      2880        106        236         20       1536       6312   ELF Image Totals
+      2880        106        236         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2788 (   2.72kB)
+    Total RO  Size (Code + RO Data)                 3116 (   3.04kB)
     Total RW  Size (RW Data + ZI Data)              1556 (   1.52kB)
-    Total ROM Size (Code + RO Data + RW Data)       2808 (   2.74kB)
+    Total ROM Size (Code + RO Data + RW Data)       3136 (   3.06kB)
 
 ==============================================================================
 

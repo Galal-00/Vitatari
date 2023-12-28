@@ -24,13 +24,6 @@ main_Space FUNCTION
 	ldrh r5 , [r7]
 	BL DRAW_SPACESHIP
 	
-	; SPACESHIP BULLETS
-	; BULLET COORDINATES & COLOR
-	MOV R2, #258
-	MOV R5, #180
-	LDR R10, =WHITE
-	
-	BL DRAW_S_BULLET
 	
 	; GOBLIN BULLETS
 	; R2, R5: (X, Y) TOP LEFT CORNER
@@ -51,6 +44,7 @@ main_Space FUNCTION
     ORR r2, #0x0F00
     STRH R2, [R0]
 SpaceGLoop
+		bl delay_quarter_second
 		LDR R0, =GPIOA_ODR
 		ldrh r2, [r0]
 		ORR r2, #0x0F00
@@ -68,17 +62,22 @@ SpaceGLoop
 		CMP r1, r2
 		beq Spaceleft
 		cmp r1 , r3
-		beq Spaceright
-
+		beq Spaceright	
+		BL MOVE_BULLET_UP
+		cmp r1 , r4
+		beq Shoot
+		
 		B SpaceGLoop
 Spaceleft
 			bl MOVE_SPACE_LEFT
-			bl delay_quarter_second
 			b SpaceGLoop
 Spaceright	
 			bl MOVE_SPACE_RIGHT
-			bl delay_quarter_second
 			b SpaceGLoop
+Shoot
+			bl SHOOT_SBULLET
+			b SpaceGLoop
+
 STOP
 	B STOP
     POP {R0-R12, PC}
@@ -276,7 +275,7 @@ DRAW_LEGION FUNCTION
 	PUSH {R0-R5, LR}
 	; CREATE LEGION OF GOBLINS
 	; R2, R5: STARTING X, Y
-	MOV R5, #41		;Y
+	MOV R5, #66		;Y
 	MOV R0, #2  ;MOVE VERTICALLY
 LEGION_COLUMN
 	MOV R2,#24	;X
@@ -416,9 +415,17 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	mov r1 , #200
 	str r1, [r0]
 	;TODO: INITIALIZE STARTING_X TO 150, NOTICE THAT STARTING_X IS DECLARED AS 16-BITS
-	
-	
+	ldr r0 ,=BULLET_MEMORY_X
+	mov r1,#0
+	strh r1,[r0]
+	strh r1,[r0,#2]
+	strh r1,[r0,#4]
+	strh r1,[r0,#6]
+	strh r1,[r0,#8]
+	strh r1,[r0,#10]
 	;TODO: INITIALIZE STARTING_Y TO 170, NOTICE THAT STARTING_Y IS DECLARED AS 16-BITS
+
+	
 	
 	POP{R0-R12,PC}
 	ENDFUNC
@@ -462,16 +469,16 @@ MOVE_SPACE_RIGHT	FUNCTION
 	ldr r6, =SPACE_Y
 	ldrh r0, [r7]
 	ldrh r5, [r6]
-
-
+	ADD r0, r0, #10
+	ldr r1 , = 299
+	CMP r0,r1
+	BGE cancelmovRight
 	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
 	BL COVER_SPRITE
 	
 	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
 	; R2, R5: (X, Y) TOP LEFT CORNER
-	ADD r0, r0, #10
-	CMP r0,320
-	JGE cancelmovRight
+
 	mov r2, r0
 	BL DRAW_SPACESHIP
 	strh r0, [r7]
@@ -491,15 +498,16 @@ MOVE_SPACE_LEFT	FUNCTION
 	ldr r6, =SPACE_Y
 	ldrh r0, [r7]
 	ldrh r5, [r6]
-
+	SUBS r0, r0, #10
+	
+	CMP r0,#0
+	BLE cancelmovLeft
 	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
 	BL COVER_SPRITE
 	
 	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
 	; R2, R5: (X, Y) TOP LEFT CORNER
-	SUBS r0, r0, #10
-	CMP r0,#0
-	BLE cancelmovLeft
+
 
 	mov r2, r0
 	BL DRAW_SPACESHIP
@@ -517,16 +525,138 @@ cancelmovLeft
 SHOOT_SBULLET	FUNCTION
 	PUSH{R0-R12,LR}
 	
+	; R2, R5: (X, Y) TOP LEFT CORNER
+	; R10: BULLET COLOR
+
+	;R8 [R8,2] [R8,4] = X1, X2, X3
+	;[R8,6] [R8,8] [R8,10] = Y1, Y2, Y3
+	
+	ldr R8, =BULLET_MEMORY_X
+	ldrh R1, [R8]	;X1
+	ldrh R2,[R8,#2] ;X2
+	ldrh R3,[R8,#4]	;X3
+	ldrh R4,[R8,#6]	;Y1
+	ldrh R5,[R8,#8]	;Y2
+	ldrh R6,[R8,#10];Y3
+cmpX1	
+	cmp R1,#0
+	bne cmpX2
+	PUSH{R2,R5}
 	ldr r7, =SPACE_X
 	ldrh r2, [r7]
 	ADD r2, r2, #10
-	MOV r5,#210
+	MOV r5,#190
 	LDR R10, =WHITE
 	BL DRAW_S_BULLET
-	
-	
-	
+	strh r2,[R8]
+	strh r5,[R8,#6]
+	POP{R2,R5}
+	b noShoot
+cmpX2
+	cmp R2,#0
+	bne cmpX3
+	PUSH{R2,R5}
+	ldr r7, =SPACE_X
+	ldrh r2, [r7]
+	ADD r2, r2, #10
+	MOV r5,#190
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r2,[R8,#2]
+	strh r5,[R8,#8]
+	POP{R2,R5}
+	b noShoot
+cmpX3
+	cmp R3,#0
+	bne noShoot
+	PUSH{R2,R5}
+	ldr r7, =SPACE_X
+	ldrh r2, [r7]
+	ADD r2, r2, #10
+	MOV r5,#190
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r2,[R8,#4]
+	strh r5,[R8,#10]
+	POP{R2,R5}
+
+noShoot
 	POP{R0-R12,PC}
 	ENDFUNC	
+	
+;##########################
+MOVE_BULLET_UP FUNCTION
+	; R2, R5: (X, Y) TOP LEFT CORNER
+	; R10: BULLET COLOR
 
+	;R8 [R8,2] [R8,4] = X1, X2, X3
+	;[R8,6] [R8,8] [R8,10] = Y1, Y2, Y3
+	
+	PUSH{R0-R12,LR}
+	MOV R0,#0
+	ldr R8, =BULLET_MEMORY_X
+	ldrh R1, [R8]	;X1
+	ldrh R2,[R8,#2] ;X2
+	ldrh R3,[R8,#4]	;X3
+	ldrh R4,[R8,#6]	;Y1
+	ldrh R5,[R8,#8]	;Y2
+	ldrh R6,[R8,#10];Y3
+cmpX11	
+	cmp R1,#0
+	beq cmpX22
+	PUSH{R2,R5}
+	MOV r2, R1
+	MOV r5, R4
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3
+	CMP R5, #25
+	BLE set_X1_0
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r5,[R8,#6]
+	POP{R2,R5}
+	b cmpX22
+set_X1_0
+	strh r0,[r8]
+	POP{R2,R5}
+	
+cmpX22
+	cmp R2,#0
+	beq cmpX33
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3
+	CMP R5, #25
+	BLE set_X2_0
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r5,[R8,#8]
+	b cmpX33
+set_X2_0
+	strh r0,[r8,#2]
+cmpX33
+	cmp R3,#0
+	beq NoMove
+	PUSH{R2,R5}
+	MOV r2, R3
+	MOV r5, R6
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3
+	CMP R5, #25
+	BLE set_X3_0
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r5,[R8,#10]
+	POP{R2,R5}
+	b NoMove
+set_X3_0
+	strh r0,[r8,#4]
+	POP{R2,R5}
+
+NoMove
+	POP{R0-R12,PC}
+	ENDFUNC
+	
 	END
