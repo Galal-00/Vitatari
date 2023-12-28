@@ -579,6 +579,16 @@ DelayInner_Loop2
         SUBS R0, #1000             ; Decrement the delay count
 		cmp	R0, #0
         BGT DelayInner_Loop2     ; Branch until the count becomes zero
+	POP {R0-R12, PC}                ; Pop R4 and return from subroutine
+	ENDFUNC
+
+delay_100_MILLIsecond FUNCTION
+    PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
+    LDR R0, =INTERVAL           ; Load the delay count
+DelayInner_Loop3
+        SUBS R0, #100             ; Decrement the delay count
+		cmp	R0, #0
+        BGT DelayInner_Loop3     ; Branch until the count becomes zero
     
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
