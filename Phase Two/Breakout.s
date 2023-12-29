@@ -44,8 +44,9 @@ main_Breakout FUNCTION
 	MOV R2, #164
 	MOV R5, #5
 	LDR R10, =WHITE
-	BL Draw_Score_Board_Zero	
-	;B MAINLOOP
+	BL Draw_Score_Board_Zero
+	
+	
 gameLoop
 		;Check if did_move in prev loop if yes skips moving in this loop
 		ldr r5 , =did_move
@@ -70,8 +71,6 @@ gameLoop
 		beq left
 		cmp r1 , r3
 		beq right
-		
-
 		b ballAnimate
 left
 		
@@ -115,7 +114,7 @@ check_y_pos_CMP
 	ADDS R2, R2, R3
 	B contCompY
 check_y_neg_CMP
-	CMP R2, #50		; upper wall
+	CMP R2, #43		; upper wall
 	BLE yPos
     SUBS R2, R2, R3
 	B contCompY
@@ -130,13 +129,18 @@ check_platform
 	CMP r7, r8
 	BLT contCompY
 	
+	
 yNeg
 ; set x to be -ve moving
 	ldr r7, =y_negative
 	ldrh r8, [r7]
 	mov r8, #1
-	str r8, [r7]
+	strh r8, [r7]
 	SUBS R2, R2, R3
+	ldr r5, =did_move
+	ldr r6, [r5]
+	CMP r6, #1
+	SUBEQ r2, r2, #1
 	;increament x for deflection
 	
 ;	ldr r9 , =ballX
@@ -149,14 +153,14 @@ yPos
 	ldr r7, =y_negative
 	ldrh r8, [r7]
 	mov r8, #0
-	str r8, [r7]
+	strh r8, [r7]
 	ADDS R2, R2, R3
-	
 
 contCompY
+	LDR R0, =ballY
 	STRH R2, [R0] 
 
-	;B Draw_Ball_GLOOP
+	B check_collision
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
@@ -182,7 +186,7 @@ xNeg
 	ldr r7, =x_negative
 	ldrh r8, [r7]
 	mov r8, #1
-	str r8, [r7]
+	strh r8, [r7]
 	SUBS R2, R2, R3
 	B contCompX
 xPos
@@ -190,14 +194,47 @@ xPos
 	ldr r7, =x_negative
 	ldrh r8, [r7]
 	mov r8, #0
-	str r8, [r7]
+	strh r8, [r7]
 	ADDS R2, R2, R3
     
 contCompX
 	; store new position in ball x
-	
     STRH R2, [R1]
 
+	mov r10, #0
+check_collision
+	LDR R4, =ballX
+	LDRH R5 , [R4]
+	LDR R6, =ballY
+	LDRH R7 , [R6]
+	ldr r2, =BLOCK_ARMY_X	; get block X
+	ldrh r1, [r4, r10]
+	CMP r1, #0
+	BEQ repeat_check
+	ldr r3, =BLOCK_ARMY_Y	; get block Y
+	ldrh r0, [r3, r10]
+	add r8, r1, #20	; block X2
+	add r9, r0, #6	; block Y2
+	
+	CMP r1, R5
+	BGT Draw_Ball_GLOOP
+	CMP r8, R5
+	BLT Draw_Ball_GLOOP
+	
+	CMP r9, R7
+	BGT Draw_Ball_GLOOP
+	CMP r0, R7
+	BLT Draw_Ball_GLOOP
+	
+	BL DEL_BLOCK
+	mov r1, #0
+	strh r0, [r1]
+	
+repeat_check
+	add r10, r10, #1
+	CMP r10, #70
+	BEQ Draw_Ball_GLOOP
+	B check_collision
 
 Draw_Ball_GLOOP
 	LDR R0, =ballX
@@ -209,71 +246,6 @@ Draw_Ball_GLOOP
 	BL DRAW_BALL
 	bl delay_100_MILLIsecond
     B gameLoop
-	; Check for collisions with walls
-;    LDR R2, =ballX
-;    ldrh R0, [R2]
-;	LDR R3, =ballVelX
-;	ldrh R1, [R3]
-
-;    ADDS R2, R0, R1
-;    CMP R2, #316     ; Right wall
-;    BGT reverseXVel
-
-;    CMP R0, #4        ; Left wall
-;    BLS reverseXVel
-	
-;    LDR R0, =ballVelX
-;    STRH R0, =ballVelX
-   ;B noReverseXVel
-
-;reverseXVel
-;    LDR R1, =ballVelX
-;    ldrh R0 , [R1]
-;	NEGS R0, R0
-;    STR R0, [R1]
-
-;noReverseXVel
-
-;;     Check for collisions with top and bottom walls
-
-;	LDR R2, =ballY
-;    LDR R0, [R2]
-;	LDR R3, =ballVelY
-;	LDR R1, [R3]
-
-;    ADDS R2, R0, R1
-
-;    CMP R2, #240     ; Bottom wall
-;    BGT reverseYVel
-
-;    CMP R0, #33       ; Top wall
-;    BLT reverseYVel
-
-;    LDR R0, =ballVelY
-;    STRH R0, =ballVelY
-;    B noReverseYVel
-
-;reverseYVel
-;    LDR R0, =ballVelY
-;    NEGS R0, R0
-;    STRH R0, =ballVelY
-
-;noReverseYVel
-
-;    ; ... (existing code)
-
-;    BL DRAW_BLOCKS
-;    LDR R7, =WHITE
-;    BL Draw_Platform
-;    BL Draw_Border
-
-;    ; Draw the ball
-;    LDR R2, =ballX
-;    LDR R5, =ballY
-;    LDR R10, =WHITE
-;    BL DRAW_BALL
-
-		
 
 Stop_Breakout
 		B Stop_Breakout
@@ -287,10 +259,13 @@ DRAW_BLOCKS FUNCTION
 	; R1: WIDTH X1
 	; R3: HEIGHT Y2
 	; R4: WIDTH X2
-	PUSH {R0 - R6, R10, LR}
+	PUSH {R0 - R12, LR}
 	MOV R0,#40
 	ADD R3,R0,#6
 	MOV R6,#4
+	ldr r7, =BLOCK_ARMY_X
+	ldr r9, =BLOCK_ARMY_Y
+	mov r8, #0
 COLSETUP
 	MOV R1,#7
 	ADD R4,R1,#20
@@ -298,9 +273,11 @@ COLSETUP
 	LDR R10,=YELLOW
 	CMP R6, #2
 	BNE ROWSETUP
-	LDR R10, =ORANGE
+	LDR R10, =RED
 ROWSETUP
-
+	strh r1, [r7, r8]
+	strh r0, [r9, r8]
+	add r8, r8, #2
 	bl DRAW_RECTANGLE_FILLED
 	ADD R1, R1, #22
 	ADD R4, R4, #22
@@ -312,7 +289,32 @@ ROWSETUP
 	SUBS R6,R6,#1
 	CMP R6,#0
 	BGE COLSETUP
-	POP {R0 - R6, R10, PC}
+	POP {R0 - R12, PC}
+	ENDFUNC
+	
+DRAW_BLOCK FUNCTION
+	; R0: HEIGHT Y1
+	; R1: WIDTH X1
+	; R3: HEIGHT Y2
+	; R4: WIDTH X2
+	; R10: COLOR
+	PUSH {R0 - R12, LR}
+	ADD R3,R0,#6
+	ADD R4,R1,#20
+	BL DRAW_RECTANGLE_FILLED
+	POP {R0 - R12, PC}
+	ENDFUNC
+	
+DEL_BLOCK FUNCTION
+	; R0: HEIGHT Y1
+	; R1: WIDTH X1
+	; R3: HEIGHT Y2
+	; R4: WIDTH X2
+	; R10: COLOR
+	PUSH {R0 - R12, LR}
+	LDR R10, =BLACK
+	BL DRAW_BLOCK
+	POP {R0 - R12, PC}
 	ENDFUNC
 
 ;xr2:144 yr5:5
@@ -484,57 +486,62 @@ INITIALIZE_VARIABLES	FUNCTION
 	ldr r0 , =SPRITE_X
 	ldr r1 , [r0]
 	mov r1 , #150
-	str r1, [r0]
+	strh r1, [r0]
 	ldr r0 , =SPRITE_Y
 	ldr r1 , [r0]
 	mov r1 , #221
-	str r1, [r0]
+	strh r1, [r0]
 	
 	ldr r0 , =ballX
 	ldr r1 , [r0]
 	mov r1 , #160
-	str r1, [r0]
+	strh r1, [r0]
 	
 	ldr r0 , =ballY
 	ldr r1 , [r0]
-	mov r1 , #50
-	str r1, [r0]
+	mov r1 , #110
+	strh r1, [r0]
 	
 	ldr r0 , =ballVelX
 	ldr r1 , [r0]
 	mov r1 , #1
-	str r1, [r0]
+	strh r1, [r0]
 	
 	ldr r0 , =ballVelY
 	ldr r1 , [r0]
 	mov r1 , #1
-	str r1, [r0]
+	strh r1, [r0]
 
 	ldr r0 , =x_negative
 	ldr r1 , [r0]
 	mov r1 , #0
-	str r1, [r0]
+	strh r1, [r0]
 	
 	ldr r0 , =y_negative
 	ldr r1 , [r0]
 	mov r1 , #0
-	str r1, [r0]
+	strh r1, [r0]
 	
 		
 	ldr r0 , =did_move
 	ldr r1 , [r0]
 	mov r1 , #0
-	str r1, [r0]
+	strh r1, [r0]
 
 	ldr r0 , =moving_right
 	ldr r1 , [r0]
 	mov r1 , #0
-	str r1, [r0]
+	strh r1, [r0]
 	
 	ldr r0 , =moving_down
 	ldr r1 , [r0]
 	mov r1 , #0
-	str r1, [r0]
+	strh r1, [r0]
+	
+	ldr r0 , =breakout_score
+	ldr r1 , [r0]
+	mov r1 , #0
+	strh r1, [r0]
 	;TODO: INITIALIZE STARTING_X TO 150, NOTICE THAT STARTING_X IS DECLARED AS 16-BITS
 	
 	
