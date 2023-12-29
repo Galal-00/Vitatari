@@ -69,14 +69,15 @@ PlatformHeight EQU 4
 SPRITE_X	DCW		150
 SPRITE_Y	DCW		221
 
-ballX           DCW 144
-ballY           DCW 150
-ballVelX        DCW 5  ; Initial velocity in the X direction
-ballVelY        DCW 5   ; Initial velocity in the Y direction
+ballX           DCW 160
+ballY           DCW 50
+ballVelX        DCW 1  ; Initial velocity in the X direction
+ballVelY        DCW 1   ; Initial velocity in the Y direction
 x_negative		DCW 0
 y_negative		DCW 0
-	
-
+did_move        DCW 0	
+moving_down 	DCW 0
+moving_right 	DCW 0
 SPACE_X		DCW		250
 SPACE_Y		DCW		200
 

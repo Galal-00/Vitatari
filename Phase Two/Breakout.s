@@ -47,6 +47,15 @@ main_Breakout FUNCTION
 	BL Draw_Score_Board_Zero	
 	;B MAINLOOP
 gameLoop
+		;Check if did_move in prev loop if yes skips moving in this loop
+		ldr r5 , =did_move
+		ldrh r6 , [r5]
+		cmp r6 , #0
+		subne r6, #1
+		moveq r6, #1
+		strh r6, [r5]
+		bne ballAnimate
+		
 		;buttons def
 		mov r0, #0
 		mov r1, #0
@@ -61,20 +70,21 @@ gameLoop
 		beq left
 		cmp r1 , r3
 		beq right
+		
+
 		b ballAnimate
 left
+		
 		bl MOVE_SPRITE_LEFT
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
+		ldr r4 , =moving_right
+		ldrh r6 , [r4]
+		mov r6 , #0
 		b ballAnimate
 right	
 		bl MOVE_SPRITE_RIGHT
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
-		bl delay_100_MILLIsecond
+		ldr r4 , =moving_right
+		ldrh r6 , [r4]
+		mov r6 , #1
 		b ballAnimate
 		
 ballAnimate
@@ -100,15 +110,26 @@ ballAnimate
 	CMP r8, #1
 	BEQ check_y_neg_CMP
 check_y_pos_CMP
-	CMP R2, #220     ; Right wall
-	BGE xNeg
+	CMP R2, #215     ; bottom wall
+	BGE check_platform
 	ADDS R2, R2, R3
 	B contCompY
 check_y_neg_CMP
-	CMP R2, #50		; Left wall
-	BLE xPos
+	CMP R2, #50		; upper wall
+	BLE yPos
     SUBS R2, R2, R3
 	B contCompY
+check_platform
+	ldr r5, =SPRITE_X	; get current X
+	ldrh r6, [r5]
+	add r7, r6, #47	; platform width
+	ldr r5, =ballX	; get ball X
+	ldrh r8, [r5]
+	CMP r6, r8
+	BGT contCompY
+	CMP r7, r8
+	BLT contCompY
+	
 yNeg
 ; set x to be -ve moving
 	ldr r7, =y_negative
@@ -116,6 +137,12 @@ yNeg
 	mov r8, #1
 	str r8, [r7]
 	SUBS R2, R2, R3
+	;increament x for deflection
+	
+;	ldr r9 , =ballX
+;	ldrh r10 , [r9]
+;	add r10 , r10 , #3
+;	strh r10 , [r9]
 	B contCompY
 yPos
 ; set x to be +ve moving
@@ -124,17 +151,17 @@ yPos
 	mov r8, #0
 	str r8, [r7]
 	ADDS R2, R2, R3
+	
 
 contCompY
-
 	STRH R2, [R0] 
 
-
-
-	LDR R0, =ballX
-	LDRH R2, [R0]
-    LDR R1, =ballVelX
-	LDRH R3, [R1]
+	;B Draw_Ball_GLOOP
+;Horizontal movement
+	LDR R1, =ballX
+	LDRH R2, [R1]
+    ;LDR R1, =ballVelX
+	;LDRH R3, [R1]
 	; check collision x
 	ldr r7, =x_negative
 	ldrh r8, [r7]
@@ -168,11 +195,11 @@ xPos
     
 contCompX
 	; store new position in ball x
-    STR R2, [R0]
+	
+    STRH R2, [R1]
 
 
-
-; VERTICAL MOVMENT
+Draw_Ball_GLOOP
 	LDR R0, =ballX
 	LDRH R2 , [R0]
 	LDR R0, =ballY
@@ -180,9 +207,6 @@ contCompX
 	
 	LDR R10, =WHITE
 	BL DRAW_BALL
-	bl delay_100_MILLIsecond
-	bl delay_100_MILLIsecond
-	bl delay_100_MILLIsecond
 	bl delay_100_MILLIsecond
     B gameLoop
 	; Check for collisions with walls
@@ -468,22 +492,22 @@ INITIALIZE_VARIABLES	FUNCTION
 	
 	ldr r0 , =ballX
 	ldr r1 , [r0]
-	mov r1 , #144
+	mov r1 , #160
 	str r1, [r0]
 	
 	ldr r0 , =ballY
 	ldr r1 , [r0]
-	mov r1 , #150
+	mov r1 , #50
 	str r1, [r0]
 	
 	ldr r0 , =ballVelX
 	ldr r1 , [r0]
-	mov r1 , #5
+	mov r1 , #1
 	str r1, [r0]
 	
 	ldr r0 , =ballVelY
 	ldr r1 , [r0]
-	mov r1 , #5
+	mov r1 , #1
 	str r1, [r0]
 
 	ldr r0 , =x_negative
@@ -492,6 +516,22 @@ INITIALIZE_VARIABLES	FUNCTION
 	str r1, [r0]
 	
 	ldr r0 , =y_negative
+	ldr r1 , [r0]
+	mov r1 , #0
+	str r1, [r0]
+	
+		
+	ldr r0 , =did_move
+	ldr r1 , [r0]
+	mov r1 , #0
+	str r1, [r0]
+
+	ldr r0 , =moving_right
+	ldr r1 , [r0]
+	mov r1 , #0
+	str r1, [r0]
+	
+	ldr r0 , =moving_down
 	ldr r1 , [r0]
 	mov r1 , #0
 	str r1, [r0]
