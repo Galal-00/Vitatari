@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\Phase_Two.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\Phase_Two.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Fri Dec 29 00:15:14 2023
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Fri Dec 29 18:23:25 2023
 <BR><P>
 <H3>Maximum Stack Usage =         32 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -319,13 +319,13 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[3c]"></a>main_Space</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
-<BR><BR>[Calls]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_quarter_second
+<P><STRONG><a name="[3c]"></a>main_Space</STRONG> (Thumb, 184 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<BR><BR>[Calls]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_100_MILLIsecond
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_RECTANGLE_FILLED
-<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_BULLET_UP
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SHOOT_SBULLET
-<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_BULLET_UP
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SHOOT_SBULLET
+<LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
 <LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INITIALIZE_VARIABLES_space
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_LEGION
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_SPACESHIP
@@ -343,19 +343,19 @@ Local Symbols
 <P><STRONG><a name="[47]"></a>DRAW_S_BULLET</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_RECTANGLE_FILLED
 </UL>
-<BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_BULLET_UP
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SHOOT_SBULLET
+<BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_BULLET_UP
+<LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SHOOT_SBULLET
 </UL>
 
 <P><STRONG><a name="[40]"></a>DRAW_SPACESHIP</STRONG> (Thumb, 392 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_RECTANGLE_FILLED
 </UL>
-<BR>[Called By]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
-<P><STRONG><a name="[3f]"></a>DRAW_LEGION</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<P><STRONG><a name="[3f]"></a>DRAW_LEGION</STRONG> (Thumb, 68 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_RECTANGLE_FILLED
 <LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_GREEN_GOBLIN
 </UL>
@@ -374,34 +374,34 @@ Local Symbols
 <LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
-<P><STRONG><a name="[49]"></a>COVER_SPRITE</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<P><STRONG><a name="[49]"></a>COVER_SPACESHIP</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_RECTANGLE_FILLED
 </UL>
-<BR>[Called By]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_LEFT
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MOVE_SPACE_RIGHT
 </UL>
 
-<P><STRONG><a name="[45]"></a>MOVE_SPACE_RIGHT</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
-<BR><BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPRITE
+<P><STRONG><a name="[43]"></a>MOVE_SPACE_RIGHT</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<BR><BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPACESHIP
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_SPACESHIP
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
-<P><STRONG><a name="[44]"></a>MOVE_SPACE_LEFT</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
-<BR><BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPRITE
+<P><STRONG><a name="[42]"></a>MOVE_SPACE_LEFT</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<BR><BR>[Calls]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPACESHIP
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_SPACESHIP
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
-<P><STRONG><a name="[46]"></a>SHOOT_SBULLET</STRONG> (Thumb, 148 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<P><STRONG><a name="[44]"></a>SHOOT_SBULLET</STRONG> (Thumb, 148 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_S_BULLET
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
-<P><STRONG><a name="[43]"></a>MOVE_BULLET_UP</STRONG> (Thumb, 174 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
+<P><STRONG><a name="[45]"></a>MOVE_BULLET_UP</STRONG> (Thumb, 174 bytes, Stack size 0 bytes, welcome.o(SPACE_INVADERS))
 <BR><BR>[Calls]<UL><LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_S_BULLET
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
@@ -413,7 +413,7 @@ Local Symbols
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_COMMAND_WRITE
 </UL>
 <BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__main
-<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPRITE
+<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;COVER_SPACESHIP
 <LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_GREEN_GOBLIN
 <LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_LEGION
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRAW_SPACESHIP
@@ -466,7 +466,7 @@ Local Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_INIT
 </UL>
 
-<P><STRONG><a name="[42]"></a>delay_quarter_second</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, welcome.o(TFTCODE))
+<P><STRONG><a name="[46]"></a>delay_100_MILLIsecond</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, welcome.o(TFTCODE))
 <BR><BR>[Called By]<UL><LI><a href="#[3c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_Space
 </UL>
 
