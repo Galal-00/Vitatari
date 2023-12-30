@@ -1,3 +1,4 @@
+	
 	INCLUDE SpaceInvaders.s
 	AREA WELCOME_CODE, CODE, READONLY
 
@@ -23,7 +24,7 @@ __main FUNCTION
 	mov r2, #0x0B00	; PA10 input
 	mov r3, #0x0D00 ; PA9 input
 	mov r4, #0x0E00 ; PA8 input
-	BL main_Space
+	BL main_Breakout
 ;4 2 1, 0 if all connected
 ; right button invaders , left btn breakout
 ;WelcomeLOOP

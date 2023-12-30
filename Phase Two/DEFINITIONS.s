@@ -69,6 +69,15 @@ PlatformHeight EQU 4
 SPRITE_X	DCW		150
 SPRITE_Y	DCW		221
 
+ballX           DCW 160
+ballY           DCW 110
+ballVelX        DCW 1  ; Initial velocity in the X direction
+ballVelY        DCW 1   ; Initial velocity in the Y direction
+x_negative		DCW 0
+y_negative		DCW 0
+did_move        DCW 0	
+moving_down 	DCW 0
+moving_right 	DCW 0
 SPACE_X		DCW		250
 SPACE_Y		DCW		200
 ;bullet array positions
@@ -78,6 +87,25 @@ BULLET_MEMORY_Y DCW 0,0,0
 GREEN_GOBLIN_X 		DCW 24,73,122,171,220,269,24,73,122,171,220,269,24,73,122,171,220,269
 GREEN_GOBLIN_Y 		DCW 66,66,66,66,66,66,97,97,97,97,97,97,128,128,128,128,128,128 
 GREEN_GOBLIN_HEALTH DCW 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 
+
+BULLET_MEMORY 	DCW	0, 0
+				DCW	0, 0
+				DCW	0, 0
+				
+BLOCK_ARMY_X	dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				
+BLOCK_ARMY_Y	dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+				dcw 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+breakout_score	dcw 0
+
 	END
 
 	
