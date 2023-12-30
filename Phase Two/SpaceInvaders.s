@@ -422,38 +422,15 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	;######
 	ldr r0 ,=BULLET_MEMORY_X
 	mov r1,#0
-	ldrh R1,[R8]	;X1
-	ldrh R2,[R8,#2] ;X2
-	ldrh R3,[R8,#4]	;X3
-	ldrh R4,[R8,#6]	;Y1
-	ldrh R5,[R8,#8]	;Y2
-	ldrh R6,[R8,#10];Y3
+	strh r1,[r0]		;X1
+	strh r1,[r0,#2]		;X2
+	strh r1,[r0,#4]		;X3
+	strh r1,[r0,#6]		;Y1
+	strh r1,[r0,#8]		;Y2
+	strh r1,[r0,#10]	;Y3
+	;#####
 	
-	;LOADING GREEN GOBLIN COORDINATES
-;	ldr r0,=GREEN_GOBLIN_X
-;	mov r1,#24
-;	mov r2,#0
-;storingGreenGoblinX1
-;	strh r1,[r0,r2]
-;	ADD r2,r2,#12
-;	CMP r2,#24
-;	BLE storingGreenGoblinX1
-;	
-;	
-;	mov r1,#24
-;	mov r2,#0
-;storingGreenGoblinX2
-;	strh r1,[r0,r2]
-;	ADD r2,r2,#12
-;	CMP r2,#24
-;	BLE storingGreenGoblinX2
-;	
-;	
-;storingGreenGoblinY
-	
-	;TODO: INITIALIZE STARTING_Y TO 170, NOTICE THAT STARTING_Y IS DECLARED AS 16-BITS
-	
-	
+
 	POP{R0-R12,PC}
 	ENDFUNC
 ;#########################
