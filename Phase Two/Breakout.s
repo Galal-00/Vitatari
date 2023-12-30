@@ -160,7 +160,6 @@ contCompY
 	LDR R0, =ballY
 	STRH R2, [R0] 
 
-	B check_collision
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
@@ -201,38 +200,50 @@ contCompX
 	; store new position in ball x
     STRH R2, [R1]
 
+checky
 	mov r10, #0
 check_collision
 	LDR R4, =ballX
 	LDRH R5 , [R4]
+	ADD r11 , r5, #3 ; top left(x2) ball hitbox 
+	subs r12 , r5,#3 ; top right(x1) ball hitbox
 	LDR R6, =ballY
 	LDRH R7 , [R6]
+	ADD r4 , R7 , #3 ; top (y2) of the ball
+	sub r5, r7, #3	; bottom (y1) of the ball
 	ldr r2, =BLOCK_ARMY_X	; get block X
-	ldrh r1, [r4, r10]
+	ldrh r1, [r2, r10]	;X1
 	CMP r1, #0
 	BEQ repeat_check
 	ldr r3, =BLOCK_ARMY_Y	; get block Y
-	ldrh r0, [r3, r10]
+	ldrh r0, [r3, r10]	;Y1
 	add r8, r1, #20	; block X2
 	add r9, r0, #6	; block Y2
 	
-	CMP r1, R5
-	BGT Draw_Ball_GLOOP
-	CMP r8, R5
-	BLT Draw_Ball_GLOOP
+	CMP r1, r11
+	BGT repeat_check
+	CMP r8, r12
+	BLT repeat_check
 	
-	CMP r9, R7
-	BGT Draw_Ball_GLOOP
-	CMP r0, R7
-	BLT Draw_Ball_GLOOP
-	
+	CMP R4, R9
+	BGT repeat_check
+	CMP R5, R0
+	BLT repeat_check
+
+has_collided
+	; reverse y dir
+	ldr r7, =y_negative
+	ldrh r8, [r7]
+	eor r8, #0x0001
+	strh r8, [r7]
+	; delete block
 	BL DEL_BLOCK
 	mov r1, #0
-	strh r0, [r1]
+	strh r1, [r2, r10]
 	
 repeat_check
-	add r10, r10, #1
-	CMP r10, #70
+	add r10, r10, #2
+	CMP r10, #140
 	BEQ Draw_Ball_GLOOP
 	B check_collision
 
