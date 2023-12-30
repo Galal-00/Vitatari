@@ -231,13 +231,52 @@ check_collision
 	BGT repeat_check
 	CMP R4, R0
 	BLT repeat_check
+	; COLLIDED , now check whether its vertical or horizontal or both (corner case)
+	LDR R4, =ballX
+	LDRH R5 , [R4] ; center x ball
 
-has_collided
+	LDR R6, =ballY ; center y ball
+	LDRH R7 , [R6]
+	add R5 , R5 , #4
+	cmp r5, r1
+	beq has_collided_X
+	subs r5, r5, #8
+	cmp r5, r8
+	beq has_collided_X
+
+	B has_collided_Y
+
+has_collided_X
+	;LDR R4, =ballX
+	;LDRH R5 , [R4]
+	;ADD r11 , r5, #4 ; right (x2) ball hitbox 
+	;subs r12 , r5,#4 ; left (x1) ball hitbox
+	; reverse x dir
+	ldr r7, =x_negative
+	ldrh r8, [r7]
+	eor r8, #0x0001
+	strh r8, [r7]
+
+	LDR R4, =ballX
+	LDRH R5 , [R4] ; center x ball
+	LDR R6, =ballY ; center y ball
+	LDRH R7 , [R6]
+
+	add r7 , r7 , #4
+	cmp r7 , r0
+	beq has_collided_Y
+	sub r7 ,r7 , #8
+	cmp r7 , r0
+	beq has_collided_Y
+	b has_collided
+
+has_collided_Y
 	; reverse y dir
 	ldr r7, =y_negative
 	ldrh r8, [r7]
 	eor r8, #0x0001
 	strh r8, [r7]
+has_collided
 	; delete block
 	ldr r3, =BLOCK_HEALTH
 	LDRH r4, [r3, r10]
