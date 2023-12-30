@@ -159,7 +159,9 @@ yPos
 contCompY
 	LDR R0, =ballY
 	STRH R2, [R0] 
-
+	
+	
+	
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
@@ -205,12 +207,12 @@ checky
 check_collision
 	LDR R4, =ballX
 	LDRH R5 , [R4]
-	ADD r11 , r5, #3 ; top left(x2) ball hitbox 
-	subs r12 , r5,#3 ; top right(x1) ball hitbox
+	ADD r11 , r5, #4 ; right (x2) ball hitbox 
+	subs r12 , r5,#4 ; left (x1) ball hitbox
 	LDR R6, =ballY
 	LDRH R7 , [R6]
-	ADD r4 , R7 , #3 ; top (y2) of the ball
-	sub r5, r7, #3	; bottom (y1) of the ball
+	ADD r4 , R7 , #4 ; bottom (y2) of the ball
+	sub r5, r7, #4	; top (y1) of the ball
 	ldr r2, =BLOCK_ARMY_X	; get block X
 	ldrh r1, [r2, r10]	;X1
 	CMP r1, #0
@@ -225,9 +227,9 @@ check_collision
 	CMP r8, r12
 	BLT repeat_check
 	
-	CMP R4, R9
+	CMP R5, R9
 	BGT repeat_check
-	CMP R5, R0
+	CMP R4, R0
 	BLT repeat_check
 
 has_collided
@@ -237,9 +239,29 @@ has_collided
 	eor r8, #0x0001
 	strh r8, [r7]
 	; delete block
+	ldr r3, =BLOCK_HEALTH
+	LDRH r4, [r3, r10]
+	CMP r4, #0
+	subne r4, #1
+	strh r4, [r3, r10]
+convert_cyan
+	cmp r4, #2
+	BNE convert_yellow
+	BL DRAW_BLOCK_CYAN
+convert_yellow
+	CMP r4, #1
+	BNE convert_none
+	BL DRAW_BLOCK_YELLOW
+convert_none
+	CMP r4, #0
+	BNE Draw_Ball_GLOOP
 	BL DEL_BLOCK
 	mov r1, #0
 	strh r1, [r2, r10]
+	ldr r8 , =breakout_score
+	ldr r9 , [r8]
+	ADD r9 ,r9 , #1
+	B Draw_Ball_GLOOP
 	
 repeat_check
 	add r10, r10, #2
@@ -276,18 +298,31 @@ DRAW_BLOCKS FUNCTION
 	MOV R6,#4
 	ldr r7, =BLOCK_ARMY_X
 	ldr r9, =BLOCK_ARMY_Y
+	LDR R11, =BLOCK_HEALTH
 	mov r8, #0
+	MOV R12, #1 ; HEALTH COUNTER (SINGLE HEALTH)
 COLSETUP
 	MOV R1,#7
 	ADD R4,R1,#20
 	MOV R5,#13
 	LDR R10,=YELLOW
+	CMP r6, #4
+	BLT ORANGE_BLOCKS
+	LDR r10, =ORANGE
+	B ROWSETUP
+ORANGE_BLOCKS
 	CMP R6, #2
 	BNE ROWSETUP
-	LDR R10, =RED
+	LDR R10, =CYAN
 ROWSETUP
 	strh r1, [r7, r8]
 	strh r0, [r9, r8]
+	CMP R6, #2
+	ADDEQ R12, R12, #1 ; DOUBLE HEALTH
+	CMP R6, #4
+	ADDEQ R12, R12, #2 ; TRIPLE HEALTH
+	STRH R12, [R11, R8]	; HEALTH INIT
+	MOV R12, #1
 	add r8, r8, #2
 	bl DRAW_RECTANGLE_FILLED
 	ADD R1, R1, #22
@@ -315,7 +350,30 @@ DRAW_BLOCK FUNCTION
 	BL DRAW_RECTANGLE_FILLED
 	POP {R0 - R12, PC}
 	ENDFUNC
-	
+
+DRAW_BLOCK_YELLOW FUNCTION
+	; R0: HEIGHT Y1
+	; R1: WIDTH X1
+	; R3: HEIGHT Y2
+	; R4: WIDTH X2
+	; R10: COLOR
+	PUSH {R0 - R12, LR}
+	LDR R10, =YELLOW
+	BL DRAW_BLOCK
+	POP {R0 - R12, PC}
+	ENDFUNC
+DRAW_BLOCK_CYAN FUNCTION
+	; R0: HEIGHT Y1
+	; R1: WIDTH X1
+	; R3: HEIGHT Y2
+	; R4: WIDTH X2
+	; R10: COLOR
+	PUSH {R0 - R12, LR}
+	LDR R10, =CYAN
+	BL DRAW_BLOCK
+	POP {R0 - R12, PC}
+	ENDFUNC
+
 DEL_BLOCK FUNCTION
 	; R0: HEIGHT Y1
 	; R1: WIDTH X1
@@ -363,6 +421,10 @@ Draw_Score_Board_Zero FUNCTION
 	POP {r0-r5, PC}
 	ENDFUNC
 	
+	B dummyBREAKOUT
+	LTORG
+dummyBREAKOUT
+
 ;#############
 DRAW_BALL FUNCTION
 	PUSH {R0-R5, R10, LR}
@@ -394,7 +456,7 @@ DRAW_BALL FUNCTION
 	ADDS R1, R1, #1	; SET X1
 	SUBS R0, R0, #1	; SET Y1
 	ADDS R4, R1, #3	; SET X2
-	ADDS R3, R0, #7	; SET Y2
+	ADDS R3, R0, #6	; SET Y2
 	
 	BL DRAW_RECTANGLE_FILLED
 	POP {R0-R5, R10, PC}
@@ -553,10 +615,6 @@ INITIALIZE_VARIABLES	FUNCTION
 	ldr r1 , [r0]
 	mov r1 , #0
 	strh r1, [r0]
-	;TODO: INITIALIZE STARTING_X TO 150, NOTICE THAT STARTING_X IS DECLARED AS 16-BITS
-	
-	
-	;TODO: INITIALIZE STARTING_Y TO 170, NOTICE THAT STARTING_Y IS DECLARED AS 16-BITS
 	
 	POP{R0-R12,PC}
 	ENDFUNC
