@@ -8,47 +8,256 @@
 __main FUNCTION
 
 	BL SETUP
-	mov r0, #0
-	mov r1, #0
-	mov r3, #240 ; PA9 input
-	mov r4, #320 ; PA8 input
-	ldr r10, =BLACK
-	BL DRAW_RECTANGLE_FILLED
-	LDR R0, =GPIOA_ODR
-	ldrh r2, [r0]
-    ORR r2, #0x0F00
-    STR R2, [R0]
-	
-	mov r0, #0
-	mov r1, #0
-	mov r2, #0x0B00	; PA10 input
-	mov r3, #0x0D00 ; PA9 input
-	mov r4, #0x0E00 ; PA8 input
-	BL main_Breakout
-;4 2 1, 0 if all connected
-; right button invaders , left btn breakout
-;WelcomeLOOP
-;	
-;	ldr r0, =GPIOA_IDR
-;	ldr r1, [r0]
-;	AND r1, r1, #0x0F00
-;	CMP r1, r2
-;	BEQ breakout
-;	CMP r1, r3
-;	BEQ spaceInvaders
-;	
-;	
-;	B WelcomeLOOP
-;breakout
-;	BL main_Breakout
-;	B Stop
-;spaceInvaders
-;	BL main_Space
+
+	BL Choose_Game
+
 	B Stop
 Stop
 
 	ENDFUNC
 
+
+Choose_Game FUNCTION
+	PUSH {R0-R12, LR}
+	
+	LDR R0, =GPIOA_ODR
+	ldrh r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+Start_Choose_Game
+
+	; Draw Background 
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =0		; SET X1
+	LDR R0, =0		; SET Y1
+	LDR R4, =320	; SET X2
+	LDR R3, =240	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+
+
+	; Draw "Choose The Game", "Breakout", "Space Invaders"
+	; Draw arrow at Choose The Game (X1, Y1) = (13, 27)
+	LDR R0, =13
+	LDR R3, =27
+	LDR R5, =CHOOSE_A_GAME
+	BL DRAW_COMP_IMAGE
+	
+	; Draw arrow at Breakout (X1, Y1) = (59, 114)
+	LDR R0, =59
+	LDR R3, =114
+	LDR R5, =BREAKOUT
+	BL DRAW_COMP_IMAGE
+	
+	; Draw arrow at Space Invaders (X1, Y1) = (59, 142)
+	LDR R0, =59
+	LDR R3, =142
+	LDR R5, =Space_Invaders
+	BL DRAW_COMP_IMAGE
+
+	; Select Breakout by defaul                                                
+	MOV R7, #0
+	BL Change_Selection
+	
+	LDR R0, =GPIOA_ODR
+	ldrh r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+	
+WelcomeLOOP
+	;buttons def
+	mov r0, #0
+	mov r1, #0
+	mov r2, #0x0B00	; PA10 input
+	mov r3, #0x0D00 ; PA9 input
+	mov r4, #0x0E00 ; PA8 input
+	; get input
+	ldr r0, =GPIOA_IDR
+	ldr r1, [r0]
+	AND r1, r1, #0x0F00
+	
+	CMP r1, #0x0B00	; PA10 input
+	MOVEQ R7, #0 ;Select breakout
+	
+	CMP r1, #0x0D00	; PA9 input
+	MOVEQ R7, #1 ;Select spaceInvaders
+	
+	BL Change_Selection
+	
+	CMP r1, #0x0E00	; PA8 input
+	BNE WelcomeLOOP
+	
+	; Draw Background 
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =0		; SET X1
+	LDR R0, =0		; SET Y1
+	LDR R4, =320	; SET X2
+	LDR R3, =240	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+	
+	CMP R7, #1
+	BEQ spaceInvaders
+
+breakout
+	BL main_Breakout
+	B Start_Choose_Game
+	
+spaceInvaders
+	BL main_Space
+	B Start_Choose_Game
+ 
+
+	
+	POP {R0-R12, PC}
+	ENDFUNC	
+	
+Change_Selection FUNCTION
+	PUSH {R0-R12, LR}
+	CMP R7, #0
+	BEQ SELECTION_1
+	CMP R7, #1
+	BEQ SELECTION_2
+
+SELECTION_1
+	; Remove arrow from Space Invaders (X1, Y1) = (32, 143)
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =32		; SET X1
+	LDR R0, =143	; SET Y1
+	ADD R4, R1, #19	; SET X2
+	ADD R3, R0, #19	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+	; Draw arrow at Breakout (X1, Y1) = (32, 115)
+	LDR R0, =32
+	LDR R3, =115
+	LDR R5, =ARROW
+	BL DRAW_COMP_IMAGE
+
+	B End_Change_Selection
+
+SELECTION_2
+	; Remove arrow from Breakout (X1, Y1) = (32, 115)
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =32		; SET X1
+	LDR R0, =115	; SET Y1
+	ADD R4, R1, #19	; SET X2
+	ADD R3, R0, #19	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+	; Draw arrow at Space Invaders (X1, Y1) = (32, 143)
+	LDR R0, =32
+	LDR R3, =143
+	LDR R5, =ARROW
+	BL DRAW_COMP_IMAGE
+
+End_Change_Selection
+	POP {R0-R12, PC}
+	ENDFUNC
+	
+	B dummydum2
+	LTORG
+dummydum2
+	
+
+DRAW_COMP_IMAGE FUNCTION
+	PUSH {R0-R12, LR}
+		
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x28
+	BL LCD_DATA_WRITE
+	
+	
+	; R3 = X start
+	; R0 = Y start
+	; R5 = Image Address
+	
+	;=======USAGE=======
+	;MOV R0, X start
+	;MOV R3, Y start
+	;LDR R5, Image Address
+	;BL DRAW_COMP_IMAGE
+	
+	LDR R7, [R5], #4	; Read Image Size
+	
+	LDR R11, [R5], #4	; Read 
+
+	LDR R6, [R5], #2	; Read X dimension
+	ADD R1, R0, R6		; X end
+	
+	LDR R6, [R5], #2	; Read Y dimension
+	ADD R4, R3, R6		; Y end
+	
+	LDR R8, [R5], #2	; Read Color0
+	
+	LDR R9, [R5], #2	; Read Color1
+	
+	
+
+	
+	BL ADDRESS_SET
+
+
+	;MEMORY WRITE
+	MOV R2, #0x2C
+	BL LCD_COMMAND_WRITE
+
+
+COMP_IMAGE_LOOP
+	BL delay_10_MILLIsecond
+	LDR R0, [R5], #4
+	
+	LDR R3, =0x80000000	; 0b 10000000 00000000 00000000 00000000
+
+word_LOOP
+	ANDS R1, R0, R3
+	MOV R6, R9
+	MOVEQ R6, R8
+
+	MOV R10, R11
+comp_LOOP
+	MOV R2, R6
+	LSR R2, #8
+	BL LCD_DATA_WRITE
+	MOV R2, R6
+	BL LCD_DATA_WRITE
+
+	SUBS R7, R7, #1
+	CMP R7, #0
+	BLE out_LOOP
+	
+	SUBS R10, R10, #1
+	CMP R10, #0
+	BGT comp_LOOP
+	
+	LSR R3, #1
+	CMP R3, #0
+	BGT word_LOOP
+	
+	B COMP_IMAGE_LOOP
+	
+out_LOOP
+
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x08
+	BL LCD_DATA_WRITE
+	
+	;BL PORTA_CONF    
+	;BL LCD_INIT
+	
+    LDR R0, =GPIOA_ODR
+	ldr r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
 
 SETUP   FUNCTION
 	;THIS FUNCTION ENABLES PORT E, MARKS IT AS OUTPUT, CONFIGURES SOME GPIO
