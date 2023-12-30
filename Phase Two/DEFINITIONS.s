@@ -113,6 +113,9 @@ BLOCK_HEALTH	dcw 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 
 breakout_score	dcw 0
 
+SCORE		DCW	269
+prevSCORE	DCW	0
+
 	END
 
 	

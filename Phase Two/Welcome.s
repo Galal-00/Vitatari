@@ -8,12 +8,68 @@
 __main FUNCTION
 
 	BL SETUP
+	
+	LDR R10, =SCORE
+	MOV R1, #0	;#999
+
+Timer
+	STRH R1, [R10]
+
+	BL Display_Sccore
+	BL delay_1_second
+	
+	SUBS R1, R1, #1
+	BGE Timer
 
 	BL Choose_Game
 
 	B Stop
 Stop
 
+	ENDFUNC
+	
+Display_Sccore FUNCTION
+	PUSH {R0-R12, LR}
+	
+	LDR R10, =SCORE
+	LDRH R1, [R10]
+	
+	LDR R10, =prevSCORE
+	LDRH R2, [R10]
+	
+	CMP R1, R2
+	BEQ exit_program
+	
+	STRH R1, [R10]
+
+    MOV R10, #10   	;@ Set the divisor to 10
+
+	MOV R11, #3	 	; Number of digits
+	MOV R0, #192	; X start of first digit
+	MOV R3, #2		; Y start of all digits
+	
+convert_binary_to_decimal
+
+    UDIV R2, R1, R10         ;@ Divide the binary number by 10
+    MUL R4, R2, R10          ;@ Multiply the quotient by 10
+    SUB R6, R1, R4          ;@ Calculate the remainder
+	MOV R1, R2
+
+	LDR R5, =ZERO
+	MOV R7, #32
+	MLA R5, R6, R7, R5
+	
+	SUB R0, R0, #20
+	;MOV R3, Y start
+	;LDR R5, Image Address
+	BL DRAW_COMP_IMAGE
+	
+	SUBS R11, R11, #1
+	BGT convert_binary_to_decimal
+
+exit_program
+
+	POP {R0-R12, PC}
 	ENDFUNC
 
 
@@ -95,6 +151,33 @@ WelcomeLOOP
 	LDR R3, =240	; SET Y2
 	BL DRAW_RECTANGLE_FILLED
 	
+	LDR R0, =152
+	LDR R3, =109
+	LDR R5, =THREE
+	BL DRAW_COMP_IMAGE
+	BL delay_1_second
+	LDR R5, =TWO
+	BL DRAW_COMP_IMAGE
+	BL delay_1_second
+	LDR R5, =ONE
+	BL DRAW_COMP_IMAGE
+	BL delay_1_second
+	LDR R0, =104
+	LDR R3, =92	
+	LDR R5, =GO
+	BL DRAW_COMP_IMAGE
+	BL delay_1_second
+	BL delay_1_second
+	
+	; Draw Background 
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =104		; SET X1
+	LDR R0, =92		; SET Y1
+	LDR R4, =216	; SET X2
+	LDR R3, =148	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+	
+	
 	CMP R7, #1
 	BEQ spaceInvaders
 
@@ -169,8 +252,8 @@ DRAW_COMP_IMAGE FUNCTION
 	BL LCD_DATA_WRITE
 	
 	
-	; R3 = X start
-	; R0 = Y start
+	; R0 = X start
+	; R3 = Y start
 	; R5 = Image Address
 	
 	;=======USAGE=======
@@ -205,7 +288,6 @@ DRAW_COMP_IMAGE FUNCTION
 
 
 COMP_IMAGE_LOOP
-	BL delay_10_MILLIsecond
 	LDR R0, [R5], #4
 	
 	LDR R3, =0x80000000	; 0b 10000000 00000000 00000000 00000000
