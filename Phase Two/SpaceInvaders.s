@@ -18,31 +18,12 @@ main_Space FUNCTION
 	
 	; SPACESHIP COORDNIATES
 
-	ldr R1, =SPACE_X
-	ldr R7, =SPACE_Y
+	ldr R1, =SPACE_X  	;Space_X = Starting x
+	ldr R7, =SPACE_Y	;Space_Y = Starting y
 	ldrh r2,[r1]
 	ldrh r5 , [r7]
 	BL DRAW_SPACESHIP
-	
-	
-	; GOBLIN BULLETS
-	; R2, R5: (X, Y) TOP LEFT CORNER
-	; R10: BULLET COLOR
-	MOV R2, #180
-	MOV R5, #150
-	LDR R10, =GREEN
-	
-	BL DRAW_G_BULLET
-	
-	; DELETE GREEN GOBLIN SPRITE
-	MOV R2, #40   
-	MOV R5, #120
-	;BL DEL_GREEN_GOBLIN
 
-	LDR R0, =GPIOA_ODR
-	ldrh r2, [r0]
-    ORR r2, #0x0F00
-    STRH R2, [R0]
 SpaceGLoop
 		LDR R0, =GPIOA_ODR
 		ldrh r2, [r0]
@@ -58,13 +39,13 @@ SpaceGLoop
 		ldr r0, =GPIOA_IDR
 		ldr r1, [r0]
 		AND r1, r1, #0x0F00
-		CMP r1, r2
+		CMP r1, r2			;See if Button PA7 is pressed then moves left
 		beq Spaceleft
-		cmp r1 , r3
-		beq Spaceright	
-		cmp r1 , r4				;See if Button PA8 is pressed then shoot
+		cmp r1 , r3			;See if Button PA9 is pressed then moves right
+		beq Spaceright		
+		cmp r1 , r4			;See if Button PA8 is pressed then shoot
 		beq Shoot
-		MOV R11, #0
+		MOV R11, #0			;if we don't shoot (PA8 not pressed) reset R11 to 0
 		
 		
 		B BULLET_ANIMATE
@@ -75,7 +56,8 @@ Spaceright
 			bl MOVE_SPACE_RIGHT
 			b BULLET_ANIMATE
 Shoot
-			CMP r11, #1
+;R11 = 1 if PA8 was pressed last loop (for debounce)
+			CMP R11, #1
 			BEQ BULLET_ANIMATE
 			MOV R11, #1
 			bl SHOOT_SBULLET
@@ -91,9 +73,11 @@ STOP
 	B STOP
     POP {R0-R12, PC}
     ENDFUNC
+	
 	B DUMMY4	
 	LTORG
 DUMMY4
+
 DRAW_G_BULLET FUNCTION
 	PUSH {r0 - r5, r10, LR}
 	; GOBLIN BULLETS
@@ -427,24 +411,23 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	;THIS FUNCTION JUST INITIALIZES ANY VARIABLE IN THE DATASECTION TO ITS INITIAL VALUES
 	;ALTHOUGH WE SPECIFIED SOME VALUES IN THE DATA AREA, BUT THEIR VALUES MIGHT BE ALTERED DURING BOOT TIME.
 	;SO WE NEED TO IMPLEMENT THIS FUNCTION THAT REINITIALIZES ALL VARIABLES
-	; R2, R5: (X, Y) TOP LEFT CORNER
 	ldr r0 , =SPACE_X
 	ldr r1 , [r0]
-	mov r1 , #250
+	mov r1 , #250	;starting position y
 	str r1, [r0]
 	ldr r0 , =SPACE_Y
 	ldr r1 , [r0]
-	mov r1 , #200
+	mov r1 , #200	;starting position y
 	str r1, [r0]
-	;TODO: INITIALIZE STARTING_X TO 150, NOTICE THAT STARTING_X IS DECLARED AS 16-BITS
+	;######
 	ldr r0 ,=BULLET_MEMORY_X
 	mov r1,#0
-	strh r1,[r0]
-	strh r1,[r0,#2]
-	strh r1,[r0,#4]
-	strh r1,[r0,#6]
-	strh r1,[r0,#8]
-	strh r1,[r0,#10]
+	ldrh R1,[R8]	;X1
+	ldrh R2,[R8,#2] ;X2
+	ldrh R3,[R8,#4]	;X3
+	ldrh R4,[R8,#6]	;Y1
+	ldrh R5,[R8,#8]	;Y2
+	ldrh R6,[R8,#10];Y3
 	
 	;LOADING GREEN GOBLIN COORDINATES
 ;	ldr r0,=GREEN_GOBLIN_X
@@ -476,7 +459,7 @@ INITIALIZE_VARIABLES_space	FUNCTION
 ;#########################
 COVER_SPACESHIP	FUNCTION
 	PUSH{R0-R12,LR}
-	;THIS FUNCTION JUST DRAWS A SPRITE FROM THE STARTING X AND STARTING Y, TAKES ARGUMENTS:
+	
 	;SPRITE_X: STARTING X
 	;SPRITE_Y: STARTING Y
 	;BOTH ARGUMENTS ARE INITIALLY STORED INSIDE THE DATASECTION
@@ -493,9 +476,9 @@ COVER_SPACESHIP	FUNCTION
 	ldrh r1, [r5]
 	ldrh r0, [r6]
 	mov r4, r1
-	add r4, r4, #21
+	add r4, r4, #21	;SpaceShip Width
 	mov r3, r0
-	add r3, r3, #24
+	add r3, r3, #24 ;SpaceShip Height
 	
 	
 	ldr r10, =BLACK
@@ -505,62 +488,30 @@ COVER_SPACESHIP	FUNCTION
 	POP{R0-R12,PC}
 	ENDFUNC
 	
-;############################
-;#########################
-COVER_SPRITE	FUNCTION
-	PUSH{R0-R12,LR}
-	;THIS FUNCTION JUST DRAWS A  FROM THE STARTING X AND STARTING Y, TAKES ARGUMENTS:
-	;SPRITE_X: STARTING X
-	;SPRITE_Y: STARTING Y
-	;BOTH ARGUMENTS ARE INITIALLY STORED INSIDE THE DATASECTION
-	
-	;R1 SET X1
-	;R0 SET Y1
-	;R4 SET X2
-	;R3 SET Y2
-	
-	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
-;	ldr r5, =SPACE_X
-;	ldr r6, =SPACE_Y
-;	ldrh r1, [r5]
-;	ldrh r0, [r6]
-	mov r4, r1
-	add r4, r4, #49
-	mov r3, r0
-	add r3, r3, #31
-	
-	
-	ldr r10, =BLACK
-	BL DRAW_RECTANGLE_FILLED
-	
-	
-	POP{R0-R12,PC}
-	ENDFUNC
+
 ;#####################################
 MOVE_SPACE_RIGHT	FUNCTION
 	PUSH{R0-R12,LR}
-	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
+	;CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
 	ldr r7, =SPACE_X
-	ldr r6, =SPACE_Y
 	ldrh r0, [r7]
-	ldrh r5, [r6]
-	ADD r0, r0, #10
-	ldr r1 , = 299
-	CMP r0,r1
+	ADD r0, r0, #10 ;move in x axis by 10 pixils
+	ldr r1 , = 299	;right screen boundries 
+	CMP r0,r1		;Check for collisions
 	BGE cancelmovRight
-	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
+	
+	;COVER THE SPACESHIP WITH THE BACKGROUND COLOR
 	BL COVER_SPACESHIP
 	
-	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
-	; R2, R5: (X, Y) TOP LEFT CORNER
+	;REDRAW THE SPACESHIP IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
 
+	; R2, R5: (X, Y) TOP LEFT CORNER
+	ldr r6, =SPACE_Y
+	ldrh r5, [r6]
 	mov r2, r0
 	BL DRAW_SPACESHIP
-	strh r0, [r7]
-
-
-	POP{R0-R12,PC}
-	ENDFUNC	
+	strh r0, [r7] 	;Update SPAXE_X to new position
+	
 cancelmovRight
 
 	POP{R0-R12,PC}
@@ -568,29 +519,24 @@ cancelmovRight
 ;#############
 MOVE_SPACE_LEFT	FUNCTION
 	PUSH{R0-R12,LR}
-	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
+	;CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
 	ldr r7, =SPACE_X
-	ldr r6, =SPACE_Y
 	ldrh r0, [r7]
-	ldrh r5, [r6]
-	SUBS r0, r0, #10
-	
-	CMP r0,#0
+	SUBS r0, r0, #10 ;move left by 10 pixils
+	CMP r0,#0		;check for left screen boundry
 	BLE cancelmovLeft
-	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
+	;COVER THE SPACESHIP WITH THE BACKGROUND COLOR
 	BL COVER_SPACESHIP
 	
-	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
+	;REDRAW THE SPACESHIP IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
+
 	; R2, R5: (X, Y) TOP LEFT CORNER
 
-
+	ldr r6, =SPACE_Y
+	ldrh r5, [r6]	
 	mov r2, r0
 	BL DRAW_SPACESHIP
 	strh r0, [r7]
-
-
-	POP{R0-R12,PC}
-	ENDFUNC	
 
 cancelmovLeft
 
@@ -600,7 +546,7 @@ cancelmovLeft
 SHOOT_SBULLET	FUNCTION
 	PUSH{R0-R12,LR}
 	
-	; R2, R5: (X, Y) TOP LEFT CORNER
+	; R2, R5: (X, Y) TOP LEFT CORNER 
 	; R10: BULLET COLOR
 
 	;R8 [R8,2] [R8,4] = X1, X2, X3
@@ -613,19 +559,20 @@ SHOOT_SBULLET	FUNCTION
 	ldrh R4,[R8,#6]	;Y1
 	ldrh R5,[R8,#8]	;Y2
 	ldrh R6,[R8,#10];Y3
-
+	LDR R10, =WHITE
+	
+;If X = 0 then a bullet can be fired
 
 cmpX1	
-	cmp R1,#0
-	bne cmpX2
+	cmp R1,#0	
+	bne cmpX2 ;if it can't be fired check the next bullet
 	PUSH{R2,R5}
 	ldr r7, =SPACE_X
 	ldrh r2, [r7]
-	ADD r2, r2, #10
+	ADD r2, r2, #8
 	MOV r5,#190
-	LDR R10, =WHITE
 	BL DRAW_S_BULLET
-	strh r2,[R8]
+	strh r2,[R8]		;Update the coordinates of the bullet 
 	strh r5,[R8,#6]
 	POP{R2,R5}
 	b noShoot
@@ -637,7 +584,6 @@ cmpX2
 	ldrh r2, [r7]
 	ADD r2, r2, #10
 	MOV r5,#190
-	LDR R10, =WHITE
 	BL DRAW_S_BULLET
 	strh r2,[R8,#2]
 	strh r5,[R8,#8]
@@ -651,7 +597,6 @@ cmpX3
 	ldrh r2, [r7]
 	ADD r2, r2, #10
 	MOV r5,#190
-	LDR R10, =WHITE
 	BL DRAW_S_BULLET
 	strh r2,[R8,#4]
 	strh r5,[R8,#10]
@@ -668,7 +613,6 @@ MOVE_BULLET_UP FUNCTION
 
 	;R8 [R8,2] [R8,4] = X1, X2, X3
 	;[R8,6] [R8,8] [R8,10] = Y1, Y2, Y3
-	
 	PUSH{R0-R12,LR}
 	MOV R0,#0
 	MOV R12,#0	;Counter to loop on the Goblin array
@@ -692,8 +636,8 @@ cmpX11
 	CMP R12 , #1
 	BEQ set_X1_0
 	LDR R10, =WHITE
-	BL DRAW_S_BULLET
-	strh r5,[R8,#6]
+	BL DRAW_S_BULLET			;Draw the bullet in new location
+	strh r5,[R8,#6]				;Update Y1
 	POP{R2,R5}
 	b cmpX22
 set_X1_0
