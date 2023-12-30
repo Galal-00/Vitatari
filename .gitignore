@@ -5,3 +5,6 @@
 *.htm
 Phase Two/Phase_Two.uvguix.gihad
 Phase Two/Phase_Two.uvoptx
+# Ignore the Phase Two/Objects folder and its contents
+Phase Two/Objects/
+
