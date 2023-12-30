@@ -83,9 +83,6 @@ DRAW_G_BULLET FUNCTION
 	; GOBLIN BULLETS
 	; R2, R5: (X, Y) TOP LEFT CORNER
 	; R10: BULLET COLOR
-	MOV R2, #180
-	MOV R5, #150
-	LDR R10, =GREEN
 	
 	; HORIZONTAL UPPER RECT
 	ADD R1, R2, #0	; X1 
@@ -429,7 +426,21 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	strh r1,[r0,#8]		;Y2
 	strh r1,[r0,#10]	;Y3
 	;#####
-	
+	ldr r0 ,=GOBLIN_BULLETS_X
+	mov r1,#0
+	strh r1,[r0]		;Bullet 1 X
+	strh r1,[r0,#2]		;Bullet 2 X
+	strh r1,[r0,#4]		;Bullet 3 X
+	strh r1,[r0,#6]		;Bullet 4 X
+	strh r1,[r0,#8]		;Bullet 5 X
+	;#####
+	ldr r0 ,=GOBLIN_BULLETS_Y
+	mov r1,#0
+	strh r1,[r0]		;Bullet 1 Y
+	strh r1,[r0,#2]		;Bullet 2 Y
+	strh r1,[r0,#4]		;Bullet 3 Y
+	strh r1,[r0,#6]		;Bullet 4 Y
+	strh r1,[r0,#8]		;Bullet 5 Y
 
 	POP{R0-R12,PC}
 	ENDFUNC
@@ -730,4 +741,28 @@ CHECKS_FINISHED
 GOOUT
 	POP{R0-R11,PC}
 	ENDFUNC
+	
+;######################################
+SHOOT_GBULLET FUNCTION
+	PUSH{R0-R12,LR}
+	LDR R0,=SPACE_X
+	LDRH R1,[R0]
+	MOV R0, R1     			  ;R0 X0 of spaceship
+	ADD R1,#10     			  ;R1 X midpoint of spaceship
+	LDR R2,=GREEN_GOBLIN_X    ;R2 GREEN GOBLIN X
+	LDR R3,=GREEN_GOBLIN_Y	  ;R3 GREEN GOBLIN Y
+	MOV R4,#0		          ;R4 GOBLIN ARRAY INDEX
+	
+SHOOTING_LOOP
+	LDRH R5,[R2]
+	
+	
+	
+	POP{R0-R12,PC}
+	ENDFUNC
+	
+	
+	
+	
+	
 	END
