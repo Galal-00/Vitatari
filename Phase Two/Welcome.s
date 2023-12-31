@@ -25,6 +25,8 @@ __main FUNCTION
 	MOV R0, #50
 	LDR R5, =MINI_SPACESHIP
 	BL DRAW_IMAGE
+	
+	BL Display_SPACE_HEALTH
 
 	BL Choose_Game
 
@@ -32,6 +34,40 @@ __main FUNCTION
 Stop
 
 	ENDFUNC
+	
+	
+Display_SPACE_HEALTH FUNCTION
+	PUSH {R0-R12, LR}
+		
+	LDR R12, =SPACE_HEALTH
+	LDRH R11, [R12]
+	
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =6		; SET X1
+	LDR R0, =6		; SET Y1
+	LDR R4, =63	; SET X2
+	LDR R3, =23	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
+	
+	LDR R0, =300
+	LDR R3, =6
+	LDR R5, =MINI_SPACESHIP
+	
+Display_SPACE_HEALTH_LOOP
+
+	SUBS R11, #1
+	BLT EXIT_Display_SPACE_HEALTH_LOOP
+
+	BL DRAW_IMAGE
+	
+	SUB R0, #19
+	B Display_SPACE_HEALTH_LOOP
+EXIT_Display_SPACE_HEALTH_LOOP
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
+	
 	
 DRAW_IMAGE FUNCTION
 	PUSH {R0-R12, LR}
@@ -120,8 +156,7 @@ DRAW_MONSTER FUNCTION
 	
 	;=======USAGE=======
 	;MOV R0, X start
-	;MOV R3, Y start
-	;LDR R5, Image Address                                                                                                    
+	;MOV R3, Y start                                                                                                   
 	;BL DRAW_MONSTER
 
 	LDRH R6, [R5], #2	; Read X dimension
