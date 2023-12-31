@@ -313,6 +313,7 @@ convert_none
 	ldrh r9 , [r8]
 	ADD r9 ,r9 , #1
 	strh r9, [r8]
+	BL DISPLAY_SCORE
 	B Draw_Ball_GLOOP
 	
 repeat_check
