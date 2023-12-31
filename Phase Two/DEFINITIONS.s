@@ -86,6 +86,7 @@ ball_hitbox     EQU 4
 ball_hitbox_diameter EQU 8
 number_of_blocks EQU 70
 block_array_size EQU 140
+has_hit_platform	DCW 0
 SPACE_X		 DCW		250
 SPACE_Y		 DCW		200
 SPACE_HEALTH DCW        3
