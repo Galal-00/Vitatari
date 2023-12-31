@@ -16,13 +16,7 @@ main_Breakout FUNCTION
 ;MAINLOOP
 
 
-	;LDR R0, =GPIOC_IDR
-	;LDR R1, [R0]
-	;MOV R2, #1
-	;LSL R2, #13
-	;AND R1, R1, R2
-	;CMP R1, #0
-	;BNE MAINLOOP
+	
 	BL INITIALIZE_VARIABLES
 	BL DRAW_BLOCKS
 	LDR R7, =WHITE
@@ -30,12 +24,7 @@ main_Breakout FUNCTION
 	bl Draw_Border
 	;48 length , 4 width , 
 	
-	; Static Draw ball
-;	MOV R2, #130
-;	MOV R5, #180
-;	LDR R10, =WHITE
-;	BL DRAW_BALL
-	
+
 	MOV R2, #144
 	MOV R5, #5
 	LDR R10, =WHITE
@@ -131,24 +120,27 @@ check_y_neg_CMP
 check_platform
 	ldr r5, =SPRITE_X	; get current X
 	ldrh r6, [r5]
-	ldr r8 , =PlatformWidth
+	ldr r12 , =PlatformWidth
+	ldrh r8 , [r12]
 	add r7, r6, r8	; platform width
 	ldr r5, =ballX	; get ball X
 	ldrh r8, [r5]
 	
 	sub r8, r8, #4
 	CMP r7, r8
-	
+	;BLT check_give_chance
 	BLT.W Stop_Breakout
 	
 	add r8, r8, #8
 	CMP r6, r8
 	BGT.W Stop_Breakout
+	;BGT check_give_chance
 	
 	ldr r7, =has_hit_platform
 	mov r8, #2
 	strh r8, [r7]
-
+;check_give_chance
+	;cmp r6,
 yNeg
 ; set y to be -ve moving
 	ldr r7, =y_negative
@@ -536,18 +528,20 @@ DRAW_BALL FUNCTION
 
 ;##################################
 Draw_Platform FUNCTION
-	PUSH {r0-r7,r10, LR}
+	PUSH {r0-r8,r10, LR}
 	ldr r5, =SPRITE_Y
 	ldr r6 , =SPRITE_X
+	ldr r8 ,=PlatformWidth
+	LDRH R2 , [R8]
 	ldrh r0 , [r5]
 	ldrh r1 , [r6]
 	;mov R0, #221		; HEIGHT Y1
 	;MOV R1, #150		; WIDTH X1
 	ADD R3,R0 , #4		; HEIGHT Y2
-	ADD R4,R1,#47   	;WIDTH X2
+	ADD R4,R1,R2   	;WIDTH X2
 	MOV R10, R7
 	BL DRAW_RECTANGLE_FILLED
-	POP {r0-r7,r10, PC}
+	POP {r0-r8,r10, PC}
 	ENDFUNC
 ;###############
 MOVE_SPRITE_LEFT	FUNCTION
@@ -662,7 +656,16 @@ INITIALIZE_VARIABLES	FUNCTION
 	mov r1 , #0
 	strh r1, [r0]
 
-
+	ldr r0 , =PlatformWidth
+	ldr r1 , [r0]
+	mov r1 , #60
+	strh r1, [r0]
+	
+	ldr r0 , =END_STATE
+	ldr r1 , [r0]
+	mov r1 , #0
+	strh r1, [r0]
+	
 	POP{R0-R12,PC}
 	ENDFUNC
 	

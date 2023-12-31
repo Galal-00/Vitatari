@@ -64,7 +64,7 @@ GREEN2 	EQU 	0x2FA4
 CYAN2 	EQU  	0x07FF
 
 ;## BreakOut Consts
-PlatformWidth EQU 47
+PlatformWidth DCW 60
 PlatformHeight EQU 4
 blockWidth 		EQU 20
 blockHeight 	EQU 6
@@ -124,6 +124,7 @@ BLOCK_HEALTH	dcw 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 
 SCORE		DCW	0
 prevSCORE	DCW	0
+END_STATE	DCW 0	; 0 IS LOSE, 1 IS WIN
 
 	END
 
