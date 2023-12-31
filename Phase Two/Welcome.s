@@ -9,23 +9,54 @@ __main FUNCTION
 
 	BL SETUP
 	
-	LDR R10, =SCORE
-	MOV R1, #0	;#999
-
-Timer
-	STRH R1, [R10]
-
-	BL Display_Sccore
-	BL delay_1_second
-	
-	SUBS R1, R1, #1
-	BGE Timer
+	; Draw Background 
+	LDR R10, =BLACK	; SET COLOR
+	LDR R1, =0		; SET X1
+	LDR R0, =0		; SET Y1
+	LDR R4, =320	; SET X2
+	LDR R3, =240	; SET Y2
+	BL DRAW_RECTANGLE_FILLED
 
 	BL Choose_Game
 
 	B Stop
 Stop
 
+	ENDFUNC
+	
+Flash_Image FUNCTION
+	PUSH {R0-R12, LR}
+	
+	;=======USAGE=======
+	;LDR R0, =X start
+	;LDR R3, =Y start
+	;LDR R5, =Image Address
+	;BL Flash_Image
+	
+	LDR R1, =0x1F
+	LDR R11, =3
+	
+Flash_Image_LOOP	
+	BL delay_25ms
+	MOV R12, R1
+	LSL R12, #5
+	ORR R12, R12, R1
+	LSL R12, #6
+	ORR R12, R12, R1
+	
+	BL DRAW_COMP_IMAGE_IN_COLOR
+	
+	SUBS R1, R1, #1
+	CMP R1, #10
+	BGT Flash_Image_LOOP
+	LDR R1, =0x1F
+	SUBS R11, #1
+	BGT Flash_Image_LOOP
+	
+	LDR R12, =BLACK
+	BL DRAW_COMP_IMAGE_IN_COLOR
+
+	POP {R0-R12, PC}
 	ENDFUNC
 	
 Display_Sccore FUNCTION
@@ -71,6 +102,110 @@ exit_program
 
 	POP {R0-R12, PC}
 	ENDFUNC
+	
+DRAW_COMP_IMAGE_IN_COLOR FUNCTION
+	PUSH {R0-R12, LR}
+		
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x28
+	BL LCD_DATA_WRITE
+	
+	
+	; R0 = X start
+	; R3 = Y start
+	; R5 = Image Address
+	
+	;=======USAGE=======
+	;LDR R0, =X start
+	;LDR R3, =Y start
+	;LDR R5, =Image Address
+	;BL DRAW_COMP_IMAGE
+	
+	LDR R7, [R5], #4	; Read Image Size
+	
+	LDR R11, [R5], #4	; Read 
+
+	LDR R6, [R5], #2	; Read X dimension
+	ADD R1, R0, R6		; X end
+	
+	LDR R6, [R5], #2	; Read Y dimension
+	ADD R4, R3, R6		; Y end
+	
+	LDR R8, [R5], #2	; Read Color0
+	
+	LDR R9, [R5], #2	; Read Color1
+	MOV R9, R12
+	
+	
+
+	
+	BL ADDRESS_SET
+
+
+	;MEMORY WRITE
+	MOV R2, #0x2C
+	BL LCD_COMMAND_WRITE
+
+
+COMP_IMAGE_LOOP_IN_COLOR
+	LDR R0, [R5], #4
+	
+	LDR R3, =0x80000000	; 0b 10000000 00000000 00000000 00000000
+
+word_LOOP_IN_COLOR
+	ANDS R1, R0, R3
+	MOV R6, R9
+	MOVEQ R6, R8
+
+	MOV R10, R11
+comp_LOOP_IN_COLOR
+	MOV R2, R6
+	LSR R2, #8
+	BL LCD_DATA_WRITE
+	MOV R2, R6
+	BL LCD_DATA_WRITE
+
+	SUBS R7, R7, #1
+	CMP R7, #0
+	BLE out_LOOP_IN_COLOR
+	
+	SUBS R10, R10, #1
+	CMP R10, #0
+	BGT comp_LOOP_IN_COLOR
+	
+	LSR R3, #1
+	CMP R3, #0
+	BGT word_LOOP_IN_COLOR
+	
+	B COMP_IMAGE_LOOP_IN_COLOR
+	
+out_LOOP_IN_COLOR
+
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x08
+	BL LCD_DATA_WRITE
+	
+	;BL PORTA_CONF    
+	;BL LCD_INIT
+	
+    LDR R0, =GPIOA_ODR
+	LDR r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
+	
+
 
 
 Choose_Game FUNCTION
@@ -167,7 +302,6 @@ WelcomeLOOP
 	LDR R5, =GO
 	BL DRAW_COMP_IMAGE
 	BL delay_1_second
-	BL delay_1_second
 	
 	; Draw Background 
 	LDR R10, =BLACK	; SET COLOR
@@ -257,9 +391,9 @@ DRAW_COMP_IMAGE FUNCTION
 	; R5 = Image Address
 	
 	;=======USAGE=======
-	;MOV R0, X start
-	;MOV R3, Y start
-	;LDR R5, Image Address
+	;LDR R0, =X start
+	;LDR R3, =Y start
+	;LDR R5, =Image Address
 	;BL DRAW_COMP_IMAGE
 	
 	LDR R7, [R5], #4	; Read Image Size
@@ -333,13 +467,100 @@ out_LOOP
 	;BL LCD_INIT
 	
     LDR R0, =GPIOA_ODR
-	ldr r2, [r0]
+	LDR r2, [r0]
     ORR r2, #0x0F00
     STR R2, [R0]
 
 	POP {R0-R12, PC}
 	
 	ENDFUNC
+	
+	
+DRAW_COMP_IMAGE_WITHOUT_BACKGROUND FUNCTION
+	PUSH {R0-R12, LR}
+		
+	; R0 = X start
+	; R3 = Y start
+	; R5 = Image Address
+	
+	;=======USAGE=======
+	;MOV R0, X start
+	;MOV R3, Y start
+	;LDR R5, Image Address
+	;BL DRAW_COMP_IMAGE
+	
+	MOV R1, R0
+	MOV R0, R3
+	
+	LDR R7, [R5], #4	; Read Image Size
+	
+	LDR R11, [R5], #4	; Read PixelsperBit
+	MOV R8, R11
+
+	LDRH R2, [R5], #2	; Read X dimension
+	ADD R2, R2, #1
+	ADD R4, R1, R2		; X end
+	
+	LDRH R6, [R5], #2	; Read Y dimension
+	
+	LDRH R6, [R5], #2	; Read Color0 ; BACKGROUND  Color
+	
+	LDRH R10, [R5], #2	; Read Color1
+
+
+
+COMP_IMAGE_WITHOUT_BACKGROUND_LOOP
+	LDR R12, [R5], #4
+	
+	LDR R9, =0x80000000	; 0b 10000000 00000000 00000000 00000000
+
+word_WITHOUT_BACKGROUND_LOOP
+	ANDS R6, R9, R12
+	MOV R11, R8
+	
+comp_WITHOUT_BACKGROUND_LOOP
+	CMP R6, #0
+	BEQ skipPixel
+	BL DRAWPIXEL
+
+skipPixel
+
+	ADD R1, R1, #1
+	CMP R4, R1
+	ADDEQ R0, R0, #1
+	CMP R4, R1
+	SUBEQ R1, R1, R2
+	
+
+	SUBS R7, R7, #1
+	CMP R7, #0
+	BLE out_LOOP_WITHOUT_BACKGROUND
+	
+	SUBS R11, R11, #1
+	CMP R11, #0
+	BGT comp_WITHOUT_BACKGROUND_LOOP
+	
+	LSR R9, #1
+	CMP R9, #0
+	BGT word_WITHOUT_BACKGROUND_LOOP
+	
+	B COMP_IMAGE_WITHOUT_BACKGROUND_LOOP
+	
+out_LOOP_WITHOUT_BACKGROUND
+
+	;BL PORTA_CONF    
+	;BL LCD_INIT
+	
+    LDR R0, =GPIOA_ODR
+	LDR r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
+	
+	
 
 SETUP   FUNCTION
 	;THIS FUNCTION ENABLES PORT E, MARKS IT AS OUTPUT, CONFIGURES SOME GPIO

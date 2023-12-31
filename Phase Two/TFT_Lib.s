@@ -458,7 +458,7 @@ ADDRESS_SET     FUNCTION
 
 ;#####################################################################################################################################################################
 DRAWPIXEL   FUNCTION
-	PUSH {R0-R5, r10, LR}
+	PUSH {R0-R12, LR}
 	;THIS FUNCTION TAKES X AND Y AND A COLOR AND DRAWS THIS EXACT PIXEL
 	;NOTE YOU HAVE TO CALL ADDRESS SET ON A SPECIFIC PIXEL WITH LENGTH 1 AND WIDTH 1 FROM THE STARTING COORDINATES OF THE PIXEL, THOSE STARTING COORDINATES ARE GIVEN AS PARAMETERS
 	;THEN YOU SIMPLY ISSUE MEMORY WRITE COMMAND AND SEND THE COLOR
@@ -502,7 +502,7 @@ DRAWPIXEL   FUNCTION
 
 
 	
-	POP {R0-R5, r10, PC}
+	POP {R0-R12, PC}
     ENDFUNC
 ;#####################################################################################################################################################################
 
@@ -544,8 +544,7 @@ delay_1_second FUNCTION
 DelayInner_Loop
         SUBS R0, #1             ; Decrement the delay count
 		cmp	R0, #0
-        BGT DelayInner_Loop     ; Branch until the count becomes zero
-    
+        BGT DelayInner_Loop     ; Branch until the count becomes zero  
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
 	
@@ -556,10 +555,10 @@ delay_half_second FUNCTION
 DelayInner_Loop_HALF
         SUBS R0, #2             ; Decrement the delay count
 		cmp	R0, #0
-        BGT DelayInner_Loop_HALF     ; Branch until the count becomes zero
-    
+        BGT DelayInner_Loop_HALF     ; Branch until the count becomes zero    
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
+
 
 delay_quarter_second FUNCTION
     PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
@@ -567,11 +566,11 @@ delay_quarter_second FUNCTION
 DelayInner_Loop_quarter
         SUBS R0, #4             ; Decrement the delay count
 		cmp	R0, #0
-        BGT DelayInner_Loop_quarter     ; Branch until the count becomes zero
-    
+        BGT DelayInner_Loop_quarter     ; Branch until the count becomes zero   
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
-	
+
+
 delay_10_MILLIsecond FUNCTION
     PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
     LDR R0, =INTERVAL           ; Load the delay count
@@ -582,14 +581,89 @@ DelayInner_Loop2
 	POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
 
+
 delay_100_MILLIsecond FUNCTION
     PUSH {R0-R12, LR}               ; Push R4 and Link Register (LR) onto the stack
     LDR R0, =INTERVAL           ; Load the delay count
 DelayInner_Loop3
         SUBS R0, #100             ; Decrement the delay count
 		cmp	R0, #0
-        BGT DelayInner_Loop3     ; Branch until the count becomes zero
-    
+        BGT DelayInner_Loop3     ; Branch until the count becomes zero    
     POP {R0-R12, PC}                ; Pop R4 and return from subroutine
 	ENDFUNC
+		
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
+delay_1000ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =16002114		; INTERVAL for 1000ms
+delay_1000ms_Loop
+	SUBS R0, #1
+	BGT delay_1000ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_100ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =1600211		; INTERVAL for 100ms
+delay_100ms_Loop
+	SUBS R0, #1
+	BGT delay_100ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_10ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =160021		; INTERVAL for 10ms
+delay_10ms_Loop
+	SUBS R0, #1
+	BGT delay_10ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_1ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =16002		; INTERVAL for 1ms
+delay_1ms_Loop
+	SUBS R0, #1
+	BGT delay_1ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_500ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =8001057		; INTERVAL for 500ms
+delay_500ms_Loop
+	SUBS R0, #1
+	BGT delay_500ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_50ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =800106		; INTERVAL for 50ms
+delay_50ms_Loop
+	SUBS R0, #1
+	BGT delay_50ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_250ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =4000528		; INTERVAL for 250ms
+delay_250ms_Loop
+	SUBS R0, #1
+	BGT delay_250ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+delay_25ms FUNCTION
+    PUSH {R0, LR}
+    LDR R0, =400053		; INTERVAL for 25ms
+delay_25ms_Loop
+	SUBS R0, #1
+	BGT delay_25ms_Loop
+	POP {R0, PC}
+	ENDFUNC
+	
+	
 	END
