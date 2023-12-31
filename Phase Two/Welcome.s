@@ -17,13 +17,169 @@ __main FUNCTION
 	LDR R3, =240	; SET Y2
 	BL DRAW_RECTANGLE_FILLED
 
-	BL Choose_Game
+    MOV R0, #100
+	MOV R3, #50
+	BL DRAW_MONSTER
+	
+	MOV R3, #50
+	MOV R0, #50
+	LDR R5, =MINI_SPACESHIP
+	BL DRAW_IMAGE
+
+	;BL Choose_Game
 
 	B Stop
 Stop
 
 	ENDFUNC
 	
+DRAW_IMAGE FUNCTION
+	PUSH {R0-R12, LR}
+		
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x28
+	BL LCD_DATA_WRITE
+	
+	
+	; R0 = X start
+	; R3 = Y start
+	; R5 = Image Address
+	
+	;=======USAGE=======
+	;MOV R0, X start
+	;MOV R3, Y start
+	;LDR R5, Image Address
+	;BL DRAW_IMAGE
+
+	LDRH R6, [R5], #2	; Read X dimension
+	ADD R1, R0, R6		; X end
+	
+	LDRH R6, [R5], #2	; Read Y dimension
+	ADD R4, R3, R6		; Y end
+	
+	LDR R7, [R5], #4	; Read Image Size
+	
+	;LDRH R6, [R5], #2	; Read Dummy
+	
+	
+	;MOV R3, #101		;X start
+	;ADD R4, R3, #20		;X end
+	;MOV R0, #91			;Y start
+	;ADD R1, R0, #14		;Y end
+	BL ADDRESS_SET
+
+	;LDR R5, =ZERO
+	;MOV R7, #315
+
+
+	;MEMORY WRITE
+	MOV R2, #0x2C
+	BL LCD_COMMAND_WRITE
+
+IMAGE_LOOP
+	LDRH R6, [R5], #2
+
+	MOV R2, R6
+	LSR R2, #8
+	BL LCD_DATA_WRITE
+	MOV R2, R6
+	BL LCD_DATA_WRITE
+
+	SUBS R7, R7, #1
+	CMP R7, #0
+	BGT IMAGE_LOOP
+
+
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x08
+	BL LCD_DATA_WRITE
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
+	
+DRAW_MONSTER FUNCTION
+	PUSH {R0-R12, LR}
+		
+	LDR R5, =MONSTER
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x28
+	BL LCD_DATA_WRITE
+	
+	;=======USAGE=======
+	;MOV R0, X start
+	;MOV R3, Y start
+	;LDR R5, Image Address                                                                                                    
+	;BL DRAW_MONSTER
+
+	LDRH R6, [R5], #2	; Read X dimension
+	ADD R1, R0, R6		; X end
+	
+	LDRH R6, [R5], #2	; Read Y dimension
+	ADD R4, R3, R6		; Y end
+	
+	LDR R7, [R5], #4	; Read Image Size
+	
+	BL ADDRESS_SET
+
+
+	;MEMORY WRITE
+	MOV R2, #0x2C
+	BL LCD_COMMAND_WRITE
+
+MONSTER_LOOP
+	LDRH R6, [R5], #2
+    LDRH R8, [R5], #2
+
+MONSTER_COLOR_LOOP
+
+	MOV R2, R6
+	LSR R2, #8
+	BL LCD_DATA_WRITE
+	MOV R2, R6
+	BL LCD_DATA_WRITE
+
+	SUBS R7, #1
+	CMP R7, #0
+    BLE EXIT_MONSTER_LOOP
+
+    SUBS R8, #1
+	CMP R8, #0
+    BLE MONSTER_LOOP
+	
+	B MONSTER_COLOR_LOOP
+
+EXIT_MONSTER_LOOP
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x08
+	BL LCD_DATA_WRITE
+	
+	LDR R0, =GPIOA_ODR
+	LDR r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+	POP {R0-R12, PC}
+	
+	ENDFUNC
+	
+
 Flash_Image FUNCTION
 	PUSH {R0-R12, LR}
 	
@@ -290,18 +446,18 @@ WelcomeLOOP
 	LDR R3, =109
 	LDR R5, =THREE
 	BL DRAW_COMP_IMAGE
-	BL delay_1_second
+	BL delay_1000ms
 	LDR R5, =TWO
 	BL DRAW_COMP_IMAGE
-	BL delay_1_second
+	BL delay_1000ms
 	LDR R5, =ONE
 	BL DRAW_COMP_IMAGE
-	BL delay_1_second
+	BL delay_1000ms
 	LDR R0, =104
 	LDR R3, =92	
 	LDR R5, =GO
 	BL DRAW_COMP_IMAGE
-	BL delay_1_second
+	BL delay_1000ms
 	
 	; Draw Background 
 	LDR R10, =BLACK	; SET COLOR
