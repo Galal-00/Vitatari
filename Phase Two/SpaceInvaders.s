@@ -512,7 +512,7 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	;SO WE NEED TO IMPLEMENT THIS FUNCTION THAT REINITIALIZES ALL VARIABLES
 	ldr r0 , =SPACE_X
 	ldr r1 , [r0]
-	mov r1 , #250	;starting position y
+	mov r1 , #150	;starting position y
 	str r1, [r0]
 	ldr r0 , =SPACE_Y
 	ldr r1 , [r0]
@@ -596,7 +596,7 @@ MOVE_SPACE_RIGHT	FUNCTION
 	ldr r7, =SPACE_X
 	ldrh r0, [r7]
 	ADD r0, r0, #10 ;move in x axis by 10 pixils
-	ldr r1 , = 299	;right screen boundries 
+	ldr r1 , = 290	;right screen boundries 
 	CMP r0,r1		;Check for collisions
 	BGE cancelmovRight
 	
@@ -623,7 +623,7 @@ MOVE_SPACE_LEFT	FUNCTION
 	ldr r7, =SPACE_X
 	ldrh r0, [r7]
 	SUBS r0, r0, #10 ;move left by 10 pixils
-	CMP r0,#0		;check for left screen boundry
+	CMP r0,#10		;check for left screen boundry
 	BLE cancelmovLeft
 	;COVER THE SPACESHIP WITH THE BACKGROUND COLOR
 	BL COVER_SPACESHIP
@@ -864,7 +864,8 @@ SHOOTING_LOOP
 	CMP  R3,#24
 	BLT END_SHOOT_LOOP
 	LDRH R4,[R1,R3]           ;R4 X1 OF GREEN GOBLIN
-	ADD  R5,R4,#34            ;R5 X2 OF GREEN_GOBLIN
+	SUB  R4,R4,#2
+	ADD  R5,R4,#36           ;R5 X2 OF GREEN_GOBLIN
 	SUB  R3,R3,#2
 	CMP	 R0,R4                ;CHECKING BOUNDARIES OF X1
 	BLT  SHOOTING_LOOP      
@@ -964,18 +965,8 @@ BULLET_MOVE
 	BLT CHECK_MAP_BOUNDS
 	LDRH R7,[R6]					  ;R7 = HEALTH
 	SUB R7,R7,#1
+	BL FLICKER_SHIP
 	STRH R7,[R6]				  ;STORES NEW HEALTH VALUE
-	PUSH{R0-R12}
-	MOV R2,R8
-	MOV R5,R9
-	BL COVER_SPACESHIP
-	BL delay_100_MILLIsecond
-	BL DRAW_SPACESHIP
-	BL delay_100_MILLIsecond
-	BL COVER_SPACESHIP
-	BL delay_100_MILLIsecond
-	BL DRAW_SPACESHIP
-	POP{R0-R12}
 	B DELETE_G_BULLET
 	 
 	;ADD ANIMATION
@@ -998,5 +989,33 @@ END_GBULLETS_DOWN
 	POP{R0-R12,PC}
 	ENDFUNC
 ;################################################
+FLICKER_SHIP FUNCTION
 	
+	PUSH{R0-R12,LR}
+	LDR R0,=SPACE_X
+	LDR R1,=SPACE_Y
+	LDRH R2,[R0]
+	LDRH R5,[R1]
+	BL COVER_SPACESHIP
+	BL delay_100ms
+	BL delay_50ms
+	BL DRAW_SPACESHIP
+	BL delay_100ms
+	BL delay_50ms
+	BL COVER_SPACESHIP
+	BL delay_100ms
+	BL delay_50ms
+	BL DRAW_SPACESHIP
+	BL delay_100ms
+	BL delay_50ms
+	BL COVER_SPACESHIP
+	BL delay_100ms
+	BL delay_50ms
+	MOV R3,#150
+	STRH R3,[R0]
+	LDRH R2,[R0]
+	BL DRAW_SPACESHIP
+	
+	POP{R0-R12,PC}
+	ENDFUNC
 	END

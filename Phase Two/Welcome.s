@@ -26,7 +26,7 @@ __main FUNCTION
 	LDR R5, =MINI_SPACESHIP
 	BL DRAW_IMAGE
 
-	;BL Choose_Game
+	BL Choose_Game
 
 	B Stop
 Stop
