@@ -93,7 +93,20 @@ ballAnimate
 	
 	LDR R10, =BLACK
 	BL DRAW_BALL
-    
+	
+	; Redraw platform in case it is chipped
+	; it is chipped bec we are intentinally making the game easier
+	ldr r7, =has_hit_platform
+	ldrh r8, [r7]
+	cmp r8, #1
+	beq ball_vert_mov
+	subge r8, #1
+	mov r8, #0
+	strh r8, [r7]
+	LDR R7, =WHITE
+	BL Draw_Platform
+
+ball_vert_mov
 ; VERTICAL MOVMENT
     LDR R0, =ballY
 	LDRH R2, [R0]
@@ -105,7 +118,7 @@ ballAnimate
 	CMP r8, #1
 	BEQ check_y_neg_CMP
 check_y_pos_CMP
-	CMP R2, #217    ; bottom wall
+	CMP R2, #219    ; bottom wall
 	BGE check_platform
 	ADDS R2, R2, R3
 	B contCompY
@@ -132,8 +145,10 @@ check_platform
 	CMP r6, r8
 	BGT.W Stop_Breakout
 	
-	
-	
+	ldr r7, =has_hit_platform
+	mov r8, #2
+	strh r8, [r7]
+
 yNeg
 ; set y to be -ve moving
 	ldr r7, =y_negative
