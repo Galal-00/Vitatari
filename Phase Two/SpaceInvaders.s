@@ -1,5 +1,5 @@
+	
 	INCLUDE Breakout.s
-
 	AREA SPACE_INVADERS, CODE, READONLY
 
 main_Space FUNCTION
