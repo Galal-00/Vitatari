@@ -72,7 +72,7 @@ blockHeight 	EQU 6
 SPRITE_X	DCW		150
 SPRITE_Y	DCW		221
 
-ballX           DCW 160
+ballX           DCW 146
 ballY           DCW 110
 ballVelX        DCW 1  ; Initial velocity in the X direction
 ballVelY        DCW 1   ; Initial velocity in the Y direction
@@ -82,7 +82,7 @@ did_move        DCW 0
 upper_wall 		EQU 43 
 right_wall      EQU 306
 left_wall 		EQU 9
-ball_hitbox     EQU 4
+ball_hitbox     EQU 5
 ball_hitbox_diameter EQU 8
 number_of_blocks EQU 70
 block_array_size EQU 140
