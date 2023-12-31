@@ -366,11 +366,11 @@ COLSETUP
 	ADD R4,R1,#20
 	MOV R5,#13
 	LDR R10,=YELLOW
-	CMP r6, #4
-	BLT ORANGE_BLOCKS
+	CMP r6, #0
+	BGT CYAN_BLOCKS
 	LDR r10, =ORANGE
 	B ROWSETUP
-ORANGE_BLOCKS
+CYAN_BLOCKS
 	CMP R6, #2
 	BNE ROWSETUP
 	LDR R10, =CYAN
@@ -379,7 +379,7 @@ ROWSETUP
 	strh r0, [r9, r8]
 	CMP R6, #2
 	ADDEQ R12, R12, #1 ; DOUBLE HEALTH
-	CMP R6, #4
+	CMP R6, #0
 	ADDEQ R12, R12, #2 ; TRIPLE HEALTH
 	STRH R12, [R11, R8]	; HEALTH INIT
 	MOV R12, #1
@@ -585,15 +585,20 @@ MOVE_SPRITE_RIGHT	FUNCTION
 	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
 	ldrh r1 , [r6]
+	ldr r8, =PlatformWidth
+	ldrh r9, [r8]
+	ADD r1 , r1,r9
 	ADD r1 ,r1 , #5
-	ldr r7 , = 270
-	cmp r1 ,r7
-	bge cancelMovR
+	mov r0, #310
+	cmp r1 , r0
+	bgt cancelMovR
 
+	sub r1, r1, r9
 	LDR R7, =BLACK
 	bl Draw_Platform
 	
 	LDR R7, =WHITE
+	
 	strh r1, [r6]
 	bl Draw_Platform
 cancelMovR
