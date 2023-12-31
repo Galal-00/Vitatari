@@ -66,6 +66,8 @@ CYAN2 	EQU  	0x07FF
 ;## BreakOut Consts
 PlatformWidth EQU 47
 PlatformHeight EQU 4
+blockWidth 		EQU 20
+blockHeight 	EQU 6
 
 SPRITE_X	DCW		150
 SPRITE_Y	DCW		221
@@ -77,8 +79,13 @@ ballVelY        DCW 1   ; Initial velocity in the Y direction
 x_negative		DCW 0
 y_negative		DCW 0
 did_move        DCW 0	
-moving_down 	DCW 0
-moving_right 	DCW 0
+upper_wall 		EQU 43 
+right_wall      EQU 306
+left_wall 		EQU 9
+ball_hitbox     EQU 4
+ball_hitbox_diameter EQU 8
+number_of_blocks EQU 70
+block_array_size EQU 140
 SPACE_X		 DCW		250
 SPACE_Y		 DCW		200
 SPACE_HEALTH DCW        3
@@ -112,9 +119,9 @@ BLOCK_HEALTH	dcw 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 				dcw 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 				dcw 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
 
-breakout_score	dcw 0
 
-SCORE		DCW	269
+
+SCORE		DCW	0
 prevSCORE	DCW	0
 
 	END
