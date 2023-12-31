@@ -75,15 +75,11 @@ gameLoop
 left
 		
 		bl MOVE_SPRITE_LEFT
-		ldr r4 , =moving_right
-		ldrh r6 , [r4]
-		mov r6 , #0
+	
 		b ballAnimate
 right	
 		bl MOVE_SPRITE_RIGHT
-		ldr r4 , =moving_right
-		ldrh r6 , [r4]
-		mov r6 , #1
+		
 		b ballAnimate
 		
 ballAnimate
@@ -109,29 +105,37 @@ ballAnimate
 	CMP r8, #1
 	BEQ check_y_neg_CMP
 check_y_pos_CMP
-	CMP R2, #215     ; bottom wall
+	CMP R2, #217    ; bottom wall
 	BGE check_platform
 	ADDS R2, R2, R3
 	B contCompY
 check_y_neg_CMP
-	CMP R2, #43		; upper wall
+	ldr r8 , =upper_wall
+	CMP R2, r8	; upper wall #43
 	BLE yPos
     SUBS R2, R2, R3
 	B contCompY
 check_platform
 	ldr r5, =SPRITE_X	; get current X
 	ldrh r6, [r5]
-	add r7, r6, #47	; platform width
+	ldr r8 , =PlatformWidth
+	add r7, r6, r8	; platform width
 	ldr r5, =ballX	; get ball X
 	ldrh r8, [r5]
-	CMP r6, r8
-	BGT contCompY
+	
+	sub r8, r8, #4
 	CMP r7, r8
-	BLT contCompY
+	
+	BLT.W Stop_Breakout
+	
+	add r8, r8, #8
+	CMP r6, r8
+	BGT.W Stop_Breakout
+	
 	
 	
 yNeg
-; set x to be -ve moving
+; set y to be -ve moving
 	ldr r7, =y_negative
 	ldrh r8, [r7]
 	mov r8, #1
@@ -141,15 +145,9 @@ yNeg
 	ldr r6, [r5]
 	CMP r6, #1
 	SUBEQ r2, r2, #1
-	;increament x for deflection
-	
-;	ldr r9 , =ballX
-;	ldrh r10 , [r9]
-;	add r10 , r10 , #3
-;	strh r10 , [r9]
 	B contCompY
 yPos
-; set x to be +ve moving
+; set y to be +ve moving
 	ldr r7, =y_negative
 	ldrh r8, [r7]
 	mov r8, #0
@@ -165,20 +163,21 @@ contCompY
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
-    ;LDR R1, =ballVelX
-	;LDRH R3, [R1]
+   
 	; check collision x
 	ldr r7, =x_negative
 	ldrh r8, [r7]
 	CMP r8, #1
 	BEQ check_x_neg_CMP
 check_x_pos_CMP
-	CMP R2, #306     ; Right wall
+	ldr r8 , =right_wall
+	CMP R2, r8     ; Right wall #306 
 	BGE xNeg
 	ADDS R2, R2, R3
 	B contCompX
 check_x_neg_CMP
-	CMP R2, #9		; Left wall
+	ldr r8 , =left_wall
+	CMP R2,r8 	; Left wall #9
 	BLE xPos
     SUBS R2, R2, R3
 	B contCompX
@@ -207,19 +206,22 @@ checky
 check_collision
 	LDR R4, =ballX
 	LDRH R5 , [R4]
-	ADD r11 , r5, #4 ; right (x2) ball hitbox 
-	subs r12 , r5,#4 ; left (x1) ball hitbox
+	ldr r3 , =ball_hitbox
+	ADD r11 , r5, r3 ; right (x2) ball hitbox 
+	subs r12 , r5,r3 ; left (x1) ball hitbox
 	LDR R6, =ballY
 	LDRH R7 , [R6]
-	ADD r4 , R7 , #4 ; bottom (y2) of the ball
-	sub r5, r7, #4	; top (y1) of the ball
+	ADD r4 , R7 , r3 ; bottom (y2) of the ball
+	sub r5, r7, r3	; top (y1) of the ball
 	ldr r2, =BLOCK_ARMY_X	; get block X
 	ldrh r1, [r2, r10]	;X1
 	CMP r1, #0
 	BEQ repeat_check
 	ldr r3, =BLOCK_ARMY_Y	; get block Y
 	ldrh r0, [r3, r10]	;Y1
-	add r8, r1, #20	; block X2
+	;ldr r6 , 
+	;ldr r4 , #6
+	add r8, r1, #20; block X2
 	add r9, r0, #6	; block Y2
 	
 	CMP r1, r11
@@ -234,13 +236,14 @@ check_collision
 	; COLLIDED , now check whether its vertical or horizontal or both (corner case)
 	LDR R4, =ballX
 	LDRH R5 , [R4] ; center x ball
-
+	ldr r4 , =ball_hitbox
 	LDR R6, =ballY ; center y ball
 	LDRH R7 , [R6]
-	add R5 , R5 , #4
+	add R5 , R5 , r4
 	cmp r5, r1
 	beq has_collided_X
-	subs r5, r5, #8
+	LDR R4, =ball_hitbox_diameter
+	subs r5, r5, r4
 	cmp r5, r8
 	beq has_collided_X
 
@@ -261,11 +264,12 @@ has_collided_X
 	LDRH R5 , [R4] ; center x ball
 	LDR R6, =ballY ; center y ball
 	LDRH R7 , [R6]
-
-	add r7 , r7 , #4
+	LDR R4, =ball_hitbox
+	add r7 , r7 , R4
 	cmp r7 , r0
 	beq has_collided_Y
-	sub r7 ,r7 , #8
+	LDR R4, =ball_hitbox_diameter
+	sub r7 ,r7 , r4
 	cmp r7 , r0
 	beq has_collided_Y
 	b has_collided
@@ -294,17 +298,20 @@ convert_yellow
 convert_none
 	CMP r4, #0
 	BNE Draw_Ball_GLOOP
+	; destroy block, increment score
 	BL DEL_BLOCK
 	mov r1, #0
 	strh r1, [r2, r10]
-	ldr r8 , =breakout_score
-	ldr r9 , [r8]
+	ldr r8 , =SCORE
+	ldrh r9 , [r8]
 	ADD r9 ,r9 , #1
+	strh r9, [r8]
 	B Draw_Ball_GLOOP
 	
 repeat_check
 	add r10, r10, #2
-	CMP r10, #140
+	ldr r8 , =block_array_size
+	CMP r10, r8
 	BEQ Draw_Ball_GLOOP
 	B check_collision
 
@@ -316,7 +323,14 @@ Draw_Ball_GLOOP
 	
 	LDR R10, =WHITE
 	BL DRAW_BALL
+	
+	ldr r8 , =SCORE
+	ldrh r9 , [r8]
+	ldr r8 , =number_of_blocks
+	cmp r9, r8
+	beq Stop_Breakout
 	bl delay_100_MILLIsecond
+	
     B gameLoop
 
 Stop_Breakout
@@ -376,7 +390,11 @@ ROWSETUP
 	BGE COLSETUP
 	POP {R0 - R12, PC}
 	ENDFUNC
-	
+
+	B dummyBREAKOUT2
+	LTORG
+dummyBREAKOUT2
+
 DRAW_BLOCK FUNCTION
 	; R0: HEIGHT Y1
 	; R1: WIDTH X1
@@ -495,11 +513,12 @@ DRAW_BALL FUNCTION
 	ADDS R1, R1, #1	; SET X1
 	SUBS R0, R0, #1	; SET Y1
 	ADDS R4, R1, #3	; SET X2
-	ADDS R3, R0, #6	; SET Y2
+	ADDS R3, R0, #7	; SET Y2
 	
 	BL DRAW_RECTANGLE_FILLED
 	POP {R0-R5, R10, PC}
 	ENDFUNC
+
 ;##################################
 Draw_Platform FUNCTION
 	PUSH {r0-r7,r10, LR}
@@ -519,15 +538,8 @@ Draw_Platform FUNCTION
 MOVE_SPRITE_LEFT	FUNCTION
 	PUSH{R0-R12,LR}
 	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
-	
 	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
-	
 	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
-	
-
-	 
-	
-	
 	ldr r5, =SPRITE_Y
 	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
@@ -556,17 +568,10 @@ cancelmov
 ;##############
 MOVE_SPRITE_RIGHT	FUNCTION
 	PUSH{R0-R12,LR}
-	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE
-	
-	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR
-	
+	;TODO: CHECK FOR SCREEN BOUNDARIES, IF THE SPRITE TOUCHES A WALL, DON'T MOVE	
+	;TODO: COVER THE SPIRIT WITH THE BACKGROUND COLOR	
 	;TODO: REDRAW THE SPIRIT IN THE NEW COORDINATES AND UPDATE ITS COORDINATES IN THE DATASECTION
-	
 	;cancel mov cond
-	 
-	
-
-	
 	ldr r5, =SPRITE_Y
 	ldr r6 , =SPRITE_X
 	ldrh r0 , [r5]
@@ -582,9 +587,6 @@ MOVE_SPRITE_RIGHT	FUNCTION
 	LDR R7, =WHITE
 	strh r1, [r6]
 	bl Draw_Platform
-	
-	
-	
 cancelMovR
 
 	POP{R0-R12,PC}
@@ -640,21 +642,12 @@ INITIALIZE_VARIABLES	FUNCTION
 	mov r1 , #0
 	strh r1, [r0]
 
-	ldr r0 , =moving_right
+	ldr r0 , =SCORE
 	ldr r1 , [r0]
 	mov r1 , #0
 	strh r1, [r0]
-	
-	ldr r0 , =moving_down
-	ldr r1 , [r0]
-	mov r1 , #0
-	strh r1, [r0]
-	
-	ldr r0 , =breakout_score
-	ldr r1 , [r0]
-	mov r1 , #0
-	strh r1, [r0]
-	
+
+
 	POP{R0-R12,PC}
 	ENDFUNC
 	
