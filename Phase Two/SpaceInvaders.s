@@ -23,11 +23,13 @@ main_Space FUNCTION
 	ldrh r2,[r1]
 	ldrh r5 , [r7]
 	BL DRAW_SPACESHIP
-
+	
+	;;;;
+	MOV R7,#23
 SpaceGLoop
 		LDR R0, =GPIOA_ODR
 		ldrh r2, [r0]
-		ORR r2, #0x0F00
+		ORR r2, #0xFF00
 		STRH R2, [R0]
 		;buttons def
 		mov r0, #0
@@ -40,18 +42,20 @@ SpaceGLoop
 		ldr r1, [r0]
 		AND r1, r1, #0x0F00
 		;;;
-;		LDR R5,=SPACE_HEALTH
-;		LDRH R6,[R5]
-;		MOV R5,R6
-;		CMP R5,#0
-;		BEQ STOP
+		LDR R5,=SPACE_HEALTH
+		LDRH R6,[R5]
+		MOV R5,R6
+		CMP R5,#0
+		BEQ STOP
 		;;;
+
 		LDR R5,=GREEN_GOBLIN_DEATH_COUNT
 		LDRH R6,[R5]
 		MOV R5,R6
 		CMP R5,#18
 		BEQ STOP
 		;;;;;;
+		
 		CMP r1, r2			;See if Button PA7 is pressed then moves left
 		beq Spaceleft
 		cmp r1 , r3			;See if Button PA9 is pressed then moves right
@@ -60,24 +64,38 @@ SpaceGLoop
 		beq Shoot
 		MOV R11, #0			;if we don't shoot (PA8 not pressed) reset R11 to 0
 		
-		
-		B BULLET_ANIMATE
+		B GOBLIN_SHOOT
 Spaceleft
 			bl MOVE_SPACE_LEFT
-			b BULLET_ANIMATE
+			b GOBLIN_SHOOT
 Spaceright	
 			bl MOVE_SPACE_RIGHT
-			b BULLET_ANIMATE
+			b GOBLIN_SHOOT
 Shoot
 ;R11 = 1 if PA8 was pressed last loop (for debounce)
 			CMP R11, #1
 			BEQ BULLET_ANIMATE
 			MOV R11, #1
 			bl SHOOT_SBULLET
-			BL SHOOT_GBULLET
+			b GOBLIN_SHOOT
+			
+GOBLIN_SHOOT
+		BL PORTAA_CONF
+		CMP R7,#0
+		SUB R7,R7,#1
+		BL PORTAA_CONF
+		BGT BULLET_ANIMATE
+		BL PORTAA_CONF
+		MOV R7,#23
+		BL PORTAA_CONF
+		BL SHOOT_GBULLET
 BULLET_ANIMATE
+			BL PORTAA_CONF
+			
 			BL MOVE_GBULLETS_DOWN
+			BL PORTAA_CONF
 			BL MOVE_BULLET_UP
+			BL PORTAA_CONF
 			bl delay_100_MILLIsecond
 			bl delay_100_MILLIsecond
 			bl delay_100_MILLIsecond
@@ -92,6 +110,75 @@ STOP
 	B DUMMY4	
 	LTORG
 DUMMY4
+
+PORTAA_CONF  FUNCTION
+    PUSH {R0-R2, LR}
+    ; Enable GPIOA clock
+    LDR R0, =RCC_APB2ENR         ; Address of RCC_APB2ENR register
+    LDR R1, [R0]                 ; Read the current value of RCC_APB2ENR
+	MOV R2, #1
+    ORR R1, R1, R2, LSL #2        ; Set bit 2 to enable GPIOA clock
+    STR R1, [R0]                 ; Write the updated value back to RCC_APB2ENR
+    
+    ; Configure PORT A AS OUTPUT (LOWER 8 PINS)
+    LDR R0, =GPIOA_CRL                  
+    MOV R2, #0x33333333     ;ALL 8 LOWER PINS OF PORT A AS OUTPUT WITH MAX SPEED OF 50 MHZ
+    STR R2, [R0]
+
+    ; Configure PORT A AS OUTPUT (HIGHER 8 PINS)
+    LDR R0, =GPIOA_CRH           ; Address of GPIOC_CRH register
+    LDR R2, =0x88888888     ;ALL 8 LOWER PINS OF PORT A AS OUTPUT WITH MAX SPEED OF 50 MHZ
+    STR R2, [R0]                 ; Write the updated value back to GPIOC_CRH
+
+	; Configure PORT A AS OUTPUT (HIGHER 8 PINS)
+    LDR R0, =GPIOA_ODR          ; Address of GPIOC_CRH register
+    LDR R2, =0xFF00     ;ALL 8 LOWER PINS OF PORT A AS OUTPUT WITH MAX SPEED OF 50 MHZ
+    STR R2, [R0]
+
+    ; Enable GPIOC clock
+    LDR R0, =RCC_APB2ENR         ; Address of RCC_APB2ENR register
+    LDR R1, [R0]                 ; Read the current value of RCC_APB2ENR
+	MOV R2, #1
+    ORR R1, R1, R2, LSL #4        ; Set bit 4 to enable GPIOC clock
+    STR R1, [R0]                 ; Write the updated value back to RCC_APB2ENR
+    
+    ; Configure PC13 as input pull up 
+    LDR R0, =GPIOC_CRH           ; Address of GPIOC_CRH register
+    LDR R1, [R0]                 ; Read the current value of GPIOC_CRH
+    MOV R1, #0x88888888      ; Set mode bits for pin 13 (input mode)
+    STR R1, [R0]                 ; Write the updated value back to GPIOC_CRH
+
+	LDR R0, =GPIOC_ODR
+	MOV R1, #0x00
+	STR R1, [R0]
+
+
+    ; Enable GPIOB clock
+    LDR R0, =RCC_APB2ENR         ; Address of RCC_APB2ENR register
+    LDR R1, [R0]                 ; Read the current value of RCC_APB2ENR
+	MOV R2, #1
+    ORR R1, R1, R2, LSL #3        ; Set bit 3 to enable GPIOB clock
+    STR R1, [R0]                 ; Write the updated value back to RCC_APB2ENR
+    
+    
+    LDR R0, =GPIOB_CRL           ; Address of GPIOC_CRL register
+    MOV R1, #0x33333333      ; Set mode bits for pin 13 (output mode, max speed 50 MHz)
+    STR R1, [R0]                 ; Write the updated value back to GPIOC_CRH
+
+
+    LDR R0, =GPIOB_CRH           ; Address of GPIOC_CRL register
+    MOV R1, #0x33333333      ; Set mode bits for pin 13 (output mode, max speed 50 MHz)
+    STR R1, [R0]                 ; Write the updated value back to GPIOC_CRH
+
+
+	
+
+
+
+
+    POP {R0-R2, PC}
+
+    ENDFUNC
 
 DRAW_G_BULLET FUNCTION
 	PUSH {r0 - r5, r10, LR}
@@ -836,7 +923,9 @@ STORE_LOOP
 END_STORE_LOOP	
 	POP{R0-R11,PC}
 	ENDFUNC
-
+	B DUMMMMMM
+	LTORG
+DUMMMMMM
 ;################################################
 MOVE_GBULLETS_DOWN FUNCTION
 	PUSH{R0-R12,LR}
@@ -875,7 +964,18 @@ BULLET_MOVE
 	BLT CHECK_MAP_BOUNDS
 	LDRH R7,[R6]					  ;R7 = HEALTH
 	SUB R7,R7,#1
-	STRH R7,[R6]					  ;STORES NEW HEALTH VALUE
+	STRH R7,[R6]				  ;STORES NEW HEALTH VALUE
+	PUSH{R0-R12}
+	MOV R2,R8
+	MOV R5,R9
+	BL COVER_SPACESHIP
+	BL delay_100_MILLIsecond
+	BL DRAW_SPACESHIP
+	BL delay_100_MILLIsecond
+	BL COVER_SPACESHIP
+	BL delay_100_MILLIsecond
+	BL DRAW_SPACESHIP
+	POP{R0-R12}
 	B DELETE_G_BULLET
 	 
 	;ADD ANIMATION
