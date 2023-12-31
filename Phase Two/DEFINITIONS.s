@@ -86,10 +86,15 @@ ball_hitbox     EQU 5
 ball_hitbox_diameter EQU 8
 number_of_blocks EQU 70
 block_array_size EQU 140
+GOBLIN_BOSS_X1    EQU 85
+GOBLIN_BOSS_X2	  EQU 234
+GOBLIN_BOSS_Y1    EQU 29
+GOBLIN_BOSS_Y2    EQU 118
 has_hit_platform	DCW 0
 SPACE_X		 DCW		250
 SPACE_Y		 DCW		200
 SPACE_HEALTH DCW        3
+GOBLIN_BOSS_HEALTH DCW  2
 ;bullet array positions
 BULLET_MEMORY_X DCW 0,0,0
 BULLET_MEMORY_Y DCW 0,0,0

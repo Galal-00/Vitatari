@@ -12,10 +12,10 @@ main_Space FUNCTION
 	ADD R4, R1, #320	; X2
 	ADD R3, R0, #240	; Y2
 	BL DRAW_RECTANGLE_FILLED
-	
+;	BL Display_SCORE
 	; GREEN GOBLIN LEGION
 	BL DRAW_LEGION
-	
+;	BL Display_SPACE_HEALTH
 	; SPACESHIP COORDNIATES
 
 	ldr R1, =SPACE_X  	;Space_X = Starting x
@@ -26,6 +26,11 @@ main_Space FUNCTION
 	
 	;;;;
 	MOV R7,#23
+	ldr r0 , =SPACE_HEALTH
+	ldr r1 , [r0]
+	mov r1 , #3	;HEALTH
+	str r1, [r0]
+;	ldr r0 , =SCORE
 SpaceGLoop
 		LDR R0, =GPIOA_ODR
 		ldrh r2, [r0]
@@ -46,14 +51,15 @@ SpaceGLoop
 		LDRH R6,[R5]
 		MOV R5,R6
 		CMP R5,#0
-		BEQ STOP
+		BEQ.W STOP			;Game over if Health = zero
 		;;;
 
 		LDR R5,=GREEN_GOBLIN_DEATH_COUNT
 		LDRH R6,[R5]
 		MOV R5,R6
 		CMP R5,#18
-		BEQ STOP
+		;BEQ INITLVL2			;GO to level 2 if we kill all Goblins
+		B INITLVL2
 		;;;;;;
 		
 		CMP r1, r2			;See if Button PA7 is pressed then moves left
@@ -101,6 +107,97 @@ BULLET_ANIMATE
 			bl delay_100_MILLIsecond
 			bl delay_100_MILLIsecond
 			b SpaceGLoop
+INITLVL2
+		BL INITIALIZE_VARIABLES_space
+			; BLACK BG
+		LDR R10, =BLACK
+		MOV R1, R2	; X1 
+		MOV R0, R5	; Y1
+		ADD R4, R1, #320	; X2
+		ADD R3, R0, #240	; Y2
+		BL DRAW_RECTANGLE_FILLED
+		BL DRAW_INVISIBLE_LEGION
+;		BL DISPLAY_SCORE
+;		BL DRAW_MONSTER
+		LDR R6,=GOBLIN_BOSS_HEALTH
+		;MOV R7,#20
+		MOV R7,#2
+		STRH R7,[R6]
+SpaceGLoopLVL2
+		LDR R0, =GPIOA_ODR
+		ldrh r2, [r0]
+		ORR r2, #0xFF00
+		STRH R2, [R0]
+		;buttons def
+		mov r0, #0
+		mov r1, #0
+		mov r2, #0x0B00	; PA10 input
+		mov r3, #0x0D00 ; PA9 input
+		mov r4, #0x0E00 ; PA8 input
+		; get input
+		ldr r0, =GPIOA_IDR
+		ldr r1, [r0]
+		AND r1, r1, #0x0F00
+		;;;
+		LDR R5,=SPACE_HEALTH
+		LDRH R6,[R5]
+		MOV R5,R6
+		CMP R5,#0
+		;BEQ STOP			;Game over if Health = zero
+;		LDRHGOB
+		
+		
+		LDR R5,=GOBLIN_BOSS_HEALTH
+		LDRH R6,[R5]
+		MOV R5,R6
+		CMP R5,#0
+		BEQ STOP			
+		
+		
+		
+		CMP r1, r2			;See if Button PA7 is pressed then moves left
+		beq Spaceleft
+		cmp r1 , r3			;See if Button PA9 is pressed then moves right
+		beq Spaceright		
+		cmp r1 , r4			;See if Button PA8 is pressed then shoot
+		beq Shoot
+		MOV R11, #0			;if we don't shoot (PA8 not pressed) reset R11 to 0
+		B BOSS_SHOOT_LVL2
+SpaceleftLVL2
+			bl MOVE_SPACE_LEFT
+			b BOSS_SHOOT_LVL2
+SpacerightLVL2	
+			bl MOVE_SPACE_RIGHT
+			b BOSS_SHOOT_LVL2
+ShootLVL2
+;R11 = 1 if PA8 was pressed last loop (for debounce)
+			CMP R11, #1
+			BEQ BULLET_ANIMATE_LVL2
+			MOV R11, #1
+			bl SHOOT_SBULLET
+			b BOSS_SHOOT_LVL2
+BOSS_SHOOT_LVL2
+		BL PORTAA_CONF
+		CMP R7,#0
+		SUB R7,R7,#1
+		BL PORTAA_CONF
+		BGT BULLET_ANIMATE_LVL2
+		BL PORTAA_CONF
+		MOV R7,#23
+		BL PORTAA_CONF
+;		BL SHOOT_GBULLET
+BULLET_ANIMATE_LVL2
+			BL PORTAA_CONF		
+			BL MOVE_GBULLETS_DOWN
+			BL PORTAA_CONF
+			BL MOVE_BULLET_UP
+			BL PORTAA_CONF
+			bl delay_100_MILLIsecond
+			bl delay_100_MILLIsecond
+			bl delay_100_MILLIsecond
+			bl delay_100_MILLIsecond
+			b SpaceGLoopLVL2
+
 
 STOP
 	B STOP
@@ -365,6 +462,10 @@ DRAW_SPACESHIP FUNCTION
 	POP {R0-R5, R10, PC}
 	ENDFUNC
 	
+	
+	
+	
+	
 DRAW_LEGION FUNCTION
 	PUSH {R0-R12, LR}
 	; CREATE LEGION OF GOBLINS
@@ -398,6 +499,43 @@ LEGION_ROW
 	BGE LEGION_COLUMN
 	POP {R0-R12, PC}
 	ENDFUNC
+	
+DRAW_INVISIBLE_LEGION FUNCTION
+	PUSH {R0-R12, LR}
+	; CREATE LEGION OF GOBLINS
+	; R2, R5: STARTING X, Y
+	LDR R3, =GREEN_GOBLIN_X
+	LDR R4, =GREEN_GOBLIN_Y
+	LDR R7, =GREEN_GOBLIN_HEALTH	
+	MOV R8, #0
+	MOV R6,#0
+	
+	MOV R5, #46		;Y
+	MOV R0, #2  ;MOVE VERTICALLY
+LEGION_INVISIBLE_COLUMN
+	MOV R2,#24	;X
+	MOV R1, #5	;MOVE HORIZONTALLY
+LEGION_INVISIBLE_ROW
+	; DRAW GREEN GOBLIN SPRITE
+	strh R2,[R3,R6]
+	strh R5,[R4,R6]
+	strh R8,[R7,R6]
+	ldrh R12,[R3,R6]
+	add R6,R6,#2
+	ADD R2, R2, #49
+	SUBS R1,R1,#1
+	CMP R1, #0
+	BGE LEGION_INVISIBLE_ROW
+	ADD R5, R5, #31
+	SUBS R0,R0,#1
+	CMP R0, #0
+	BGE LEGION_INVISIBLE_COLUMN
+	POP {R0-R12, PC}
+	ENDFUNC	
+	
+	B DUMIE
+	LTORG
+DUMIE
 DEL_GREEN_GOBLIN FUNCTION
 	PUSH {R0-R4, R10, LR}
 	
@@ -512,7 +650,7 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	;SO WE NEED TO IMPLEMENT THIS FUNCTION THAT REINITIALIZES ALL VARIABLES
 	ldr r0 , =SPACE_X
 	ldr r1 , [r0]
-	mov r1 , #150	;starting position y
+	mov r1 , #150	;starting position X
 	str r1, [r0]
 	ldr r0 , =SPACE_Y
 	ldr r1 , [r0]
@@ -520,10 +658,7 @@ INITIALIZE_VARIABLES_space	FUNCTION
 	str r1, [r0]
 	
 	
-	ldr r0 , =SPACE_HEALTH
-	ldr r1 , [r0]
-	mov r1 , #3	;HEALTH
-	str r1, [r0]
+
 	;######
 	ldr r0 ,=BULLET_MEMORY_X
 	mov r1,#0
@@ -705,6 +840,107 @@ cmpX3
 noShoot
 	POP{R0-R12,PC}
 	ENDFUNC	
+	
+	
+	
+MOVE_BULLET_UPLV2 FUNCTION
+	; R2, R5: (X, Y) TOP LEFT CORNER
+	; R10: BULLET COLOR
+
+	;R8 [R8,2] [R8,4] = X1, X2, X3
+	;[R8,6] [R8,8] [R8,10] = Y1, Y2, Y3
+	PUSH{R0-R12,LR}
+	MOV R0,#0
+	ldr R8, =BULLET_MEMORY_X
+	ldrh R1, [R8]	;X1
+	ldrh R2,[R8,#2] ;X2
+	ldrh R3,[R8,#4]	;X3
+	ldrh R4,[R8,#6]	;Y1
+	ldrh R5,[R8,#8]	;Y2
+	ldrh R6,[R8,#10];Y3
+	LDR R9,	=GOBLIN_BOSS_HEALTH
+
+cmpX11LV2
+	cmp R1,#0   				
+	beq cmpX22LV2
+	PUSH{R2,R5}
+	MOV r2, R1
+	MOV r5, R4
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3	
+	
+	ldrh R11,[R9,R0] ;BOSS HEALTH
+	CMP R11,#0		;BOSS already dead
+	BEQ CHECKS_FINISHEDLV2
+	CMP R2,#85            		;BOSS X1
+	BLT CHECKS_FINISHEDLV2
+	CMP R2,#234          		;BOSS X2
+	BGT CHECKS_FINISHEDLV2
+	CMP R5,#118					;BOSS Y2
+	BGT CHECKS_FINISHEDLV2	
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET			;Draw the bullet in new location
+	SUB R11,R11,#1
+	STRH R11,[R9]				;UPDATE AND STORE BOSS HEALTH
+	strh r5,[R8,#6]				;UPDATE AND STORE Y1
+	POP{R2,R5}
+	b cmpX22LV2
+CHECKS_FINISHEDLV2
+	CMP R5, #25
+	BLE set_X1_0LV2
+	B cmpX22LV2
+set_X1_0LV2
+	strh r0,[r8]
+	POP{R2,R5}
+	
+cmpX22LV2
+	cmp R2,#0
+	beq cmpX33LV2
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3
+;	BL KILL
+;	CMP R12 , #1
+	BEQ set_X2_0LV2
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r5,[R8,#8]
+	b cmpX33LV2
+	
+set_X2_0LV2
+	strh r0,[r8,#2]
+	
+	
+cmpX33LV2
+	cmp R3,#0
+	beq NoMoveLV2
+	PUSH{R2,R5}
+	MOV r2, R3
+	MOV r5, R6
+	LDR R10, =BLACK
+	BL DRAW_S_BULLET
+	SUB r5, r5, #3
+;	BL KILLLV2
+;	CMP R12 , #1
+	BEQ set_X3_0LV2
+	LDR R10, =WHITE
+	BL DRAW_S_BULLET
+	strh r5,[R8,#10]
+	POP{R2,R5}
+	b NoMoveLV2
+set_X3_0LV2
+	strh r0,[r8,#4]
+	POP{R2,R5}
+
+NoMoveLV2
+	POP{R0-R12,PC}
+	ENDFUNC
+	
+	B DUMB
+	LTORG
+DUMB
+	
 	
 ;##########################
 MOVE_BULLET_UP FUNCTION
@@ -899,8 +1135,58 @@ END_SHOOT_LOOP2
 	
 END_SHOOT_LOOP
 	POP{R0-R12,PC}
-	
 	ENDFUNC
+	
+	
+SHOOT_GBULLET_INVIS FUNCTION
+	PUSH{R0-R12,LR}
+	LDR R0,=SPACE_X
+	LDRH R1,[R0]	
+	MOV R0, R1     			  ;R0 X0 of spaceship
+	ADD R0,R0,#10     			  ;R0 X midpoint of spaceship
+	LDR R1,=GREEN_GOBLIN_X    ;R1 ADDRESS GREEN GOBLIN X
+	LDR R2,=GREEN_GOBLIN_Y	  ;R2 ADDRESS GREEN GOBLIN Y
+	LDR R6,=GREEN_GOBLIN_HEALTH ;R6 ADDRESS GREEN GOBLIN HEALTH
+	LDR R9,=GOBLIN_BULLETS_X    ;X OF GOBLIN BULLETS
+	LDR R11,=GOBLIN_BULLETS_Y   ;y OF GOBLIN BULLETS
+	MOV R3,#34		          ;R3 GOBLIN ARRAY INDEX
+	
+SHOOTING_LOOP_INVIS
+	CMP  R3,#24
+	BLT END_SHOOT_LOOP_INVIS
+	LDRH R4,[R1,R3]           ;R4 X1 OF GREEN GOBLIN
+	SUB  R4,R4,#2
+	ADD  R5,R4,#36           ;R5 X2 OF GREEN_GOBLIN
+	SUB  R3,R3,#2
+	CMP	 R0,R4                ;CHECKING BOUNDARIES OF X1
+	BLT  SHOOTING_LOOP_INVIS
+	CMP  R0,R5                ;CHECKING BOUNDARIES OF X2
+	BGT  SHOOTING_LOOP_INVIS
+	ADD R3,R3,#2
+COLUMN_COMPARE_INVIS
+
+	LDRH R8,[R2,R3]           ;VALUE OF GOBLIN Y1
+	PUSH {R2,R5}
+	MOV R2,R4       		  ;VALUE OF X1 IN R2
+	ADD R2,R2,#14           ;MIDDLE OF GREEN GOBLIN
+	MOV R5,R8
+	ADD R5,R5,#22             ;Y2 OF GOBLIN
+	LDR R10,=GREEN
+	BL STORE_GOBLIN_BULLETS
+	CMP R12,#0
+	BEQ END_SHOOT_LOOP2_INVIS
+	BL DRAW_G_BULLET
+	POP {R2,R5}
+	B END_SHOOT_LOOP_INVIS
+
+END_SHOOT_LOOP2_INVIS
+	POP{R2,R5}
+	
+END_SHOOT_LOOP_INVIS
+	POP{R0-R12,PC}
+	
+	
+	
 ;####################################
 STORE_GOBLIN_BULLETS FUNCTION
 		;R2 = x , R5 = y
@@ -1011,10 +1297,28 @@ FLICKER_SHIP FUNCTION
 	BL COVER_SPACESHIP
 	BL delay_100ms
 	BL delay_50ms
+;	BL Display_SPACE_HEALTH
 	MOV R3,#150
 	STRH R3,[R0]
 	LDRH R2,[R0]
 	BL DRAW_SPACESHIP
+	
+	POP{R0-R12,PC}
+	ENDFUNC
+;#####################################################
+BOSS_SHOOOT FUNCTION	
+	PUSH{R0-R12,LR}
+	
+	LDR R0,=SPACE_X
+	LDRH R1,[R0]	
+	MOV R0, R1     			  ;R0 X0 of spaceship
+	ADD R0,R0,#10     			  ;R0 X midpoint of spaceship
+;	LDR R1,=GREEN_GOBLIN_X    ;R1 ADDRESS GREEN GOBLIN X
+;	LDR R2,=GREEN_GOBLIN_Y	  ;R2 ADDRESS GREEN GOBLIN Y
+	LDR R6,=GREEN_GOBLIN_HEALTH ;R6 ADDRESS GREEN GOBLIN HEALTH
+	LDR R9,=GOBLIN_BULLETS_X    ;X OF GOBLIN BULLETS
+	LDR R11,=GOBLIN_BULLETS_Y   ;y OF GOBLIN BULLETS
+	MOV R3,#34
 	
 	POP{R0-R12,PC}
 	ENDFUNC
