@@ -126,12 +126,12 @@ check_platform
 	ldr r5, =ballX	; get ball X
 	ldrh r8, [r5]
 	
-	sub r8, r8, #4
+	sub r8, r8, #5
 	CMP r7, r8
 	;BLT check_give_chance
 	BLT.W Stop_Breakout
 	
-	add r8, r8, #8
+	add r8, r8, #9
 	CMP r6, r8
 	BGT.W Stop_Breakout
 	;BGT check_give_chance
@@ -164,7 +164,6 @@ yPos
 contCompY
 	LDR R0, =ballY
 	STRH R2, [R0] 
-	
 	
 	
 ;Horizontal movement
@@ -622,7 +621,7 @@ INITIALIZE_VARIABLES	FUNCTION
 	
 	ldr r0 , =ballX
 	ldr r1 , [r0]
-	mov r1 , #160
+	mov r1 , #146
 	strh r1, [r0]
 	
 	ldr r0 , =ballY
