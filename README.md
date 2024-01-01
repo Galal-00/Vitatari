@@ -1,4 +1,4 @@
-# Project Readme: Vita-Tari Game Console 🎮
+# Vita-Tari Game Console 🎮
 
 ## Team Members
 
