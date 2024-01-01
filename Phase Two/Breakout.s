@@ -19,6 +19,9 @@ main_Breakout FUNCTION
 
 	
 	BL INITIALIZE_VARIABLES
+	
+	BL DISPLAY_SCORE
+
 	BL DRAW_BLOCKS
 	LDR R7, =WHITE
 	bl Draw_Platform
@@ -26,17 +29,9 @@ main_Breakout FUNCTION
 	;48 length , 4 width , 
 	
 
-	MOV R2, #144
-	MOV R5, #5
-	LDR R10, =WHITE
-	BL Draw_Score_Board_Zero
-	
-	MOV R2, #164
-	MOV R5, #5
-	LDR R10, =WHITE
-	BL Draw_Score_Board_Zero
 	
 	
+
 gameLoop
 		;Check if did_move in prev loop if yes skips moving in this loop
 		ldr r5 , =did_move
@@ -166,7 +161,7 @@ contCompY
 	LDR R0, =ballY
 	STRH R2, [R0] 
 	
-	
+	b checky
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
@@ -660,6 +655,11 @@ INITIALIZE_VARIABLES	FUNCTION
 	ldr r0 , =SCORE
 	ldr r1 , [r0]
 	mov r1 , #0
+	strh r1, [r0]
+	
+	ldr r0 , =prevSCORE
+	ldr r1 , [r0]
+	mov r1 , 0xFFFFFFFF
 	strh r1, [r0]
 
 	ldr r0 , =PlatformWidth
