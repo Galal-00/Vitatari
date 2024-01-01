@@ -8,6 +8,15 @@
 __main FUNCTION
 
 	BL SETUP
+	
+	BL LOSE_FUNCTION
+	BL WIN_FUNCTION
+	
+	BL DRAW_LOGO
+	BL DELAY_1000MS
+	BL DELAY_1000MS
+	BL DELAY_1000MS
+	
 	BL Choose_Game
 
 Stop
@@ -179,7 +188,7 @@ spaceInvaders
 	ENDFUNC	
 	
 	
-	
+		
 Change_Selection FUNCTION
 	PUSH {R0-R12, LR}
 	CMP R7, #0
@@ -248,6 +257,77 @@ End_Change_Selection
 	B dummydum2
 	LTORG
 dummydum2
+
+
+
+DRAW_LOGO FUNCTION
+	PUSH {R0-R12, LR}
+		
+	LDR R5, =MONSTER
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x28
+	BL LCD_DATA_WRITE
 	
+	;=======USAGE=======
+	MOV R0,#85
+	MOV R3,#29
+	;MOV R0, X start
+	;MOV R3, Y start                                                                                                   
+	;BL DRAW_MONSTER
+
+	LDRH R6, [R5], #2	; Read X dimension
+	ADD R1, R0, R6		; X end
+	LDRH R6, [R5], #2	; Read Y dimension
+	ADD R4, R3, R6		; Y end
+	LDR R7, [R5], #4	; Read Image Size
+	
+	BL ADDRESS_SET
+
+	;MEMORY WRITE
+	MOV R2, #0x2C
+	BL LCD_COMMAND_WRITE
+
+LOGO_LOOP
+	LDRH R6, [R5], #2
+    LDRH R8, [R5], #2
+
+LOGO_COLOR_LOOP
+
+	MOV R2, R6
+	LSR R2, #8
+	BL LCD_DATA_WRITE
+	MOV R2, R6
+	BL LCD_DATA_WRITE
+
+	SUBS R7, #1
+	CMP R7, #0
+    BLE EXIT_LOGO_LOOP
+
+    SUBS R8, #1
+	CMP R8, #0
+    BLE LOGO_LOOP
+	
+	B LOGO_COLOR_LOOP
+
+EXIT_LOGO_LOOP
+	; MODIFY MADCTL
+	; EXCHANGE ROW AND COLUMN, SET BGR MODE
+	MOV R2, #0x36
+	BL LCD_COMMAND_WRITE
+
+	MOV R2, #0x08
+	BL LCD_DATA_WRITE
+	
+	LDR R0, =GPIOA_ODR
+	LDR r2, [r0]
+    ORR r2, #0x0F00
+    STR R2, [R0]
+
+	POP {R0-R12, PC}
+	ENDFUNC
 
 	END
