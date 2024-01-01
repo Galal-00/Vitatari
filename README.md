@@ -63,7 +63,7 @@ The Vita-Tari game console is an ambitious venture where we built everything fro
 5. **Enjoy:**
    - Power on the Vita-Tari console and immerse yourself in the gaming experience. 🕹️
 
-## Demo Images (Placeholder)
+## Demo
 
 ![Breakout Demo](Demo%20Images/Breakout.gif)
 ![Space Invaders Demo](Demo%20Images/SpaceInvaders.gif)
