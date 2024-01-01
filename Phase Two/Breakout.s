@@ -124,19 +124,16 @@ check_platform
 	
 	sub r8, r8, #5
 	CMP r7, r8
-	;BLT check_give_chance
-	BLT.W Stop_Breakout
-	
+	BLT.W Stop_Breakout_LOSS
+	; lose cond
 	add r8, r8, #9
 	CMP r6, r8
-	BGT.W Stop_Breakout
-	;BGT check_give_chance
+	; lose cond
+	BGT.W Stop_Breakout_LOSS
 	
 	ldr r7, =has_hit_platform
 	mov r8, #2
 	strh r8, [r7]
-;check_give_chance
-	;cmp r6,
 yNeg
 ; set y to be -ve moving
 	ldr r7, =y_negative
@@ -161,7 +158,7 @@ contCompY
 	LDR R0, =ballY
 	STRH R2, [R0] 
 	
-	b checky
+	
 ;Horizontal movement
 	LDR R1, =ballX
 	LDRH R2, [R1]
@@ -331,14 +328,21 @@ Draw_Ball_GLOOP
 	ldrh r9 , [r8]
 	ldr r8 , =number_of_blocks
 	cmp r9, r8
-	beq Stop_Breakout
+	;add win cond
+	beq Stop_Breakout_WIN
 	bl delay_100_MILLIsecond
 	
     B gameLoop
 
-Stop_Breakout
-		B Stop_Breakout
-		POP {R0-R12, PC}
+Stop_Breakout_LOSS
+	BL LOSE_FUNCTION
+	B end_breakout
+
+Stop_Breakout_WIN
+	BL WIN_FUNCTION
+
+end_breakout
+	POP {R0-R12, PC}
 		ENDFUNC
 		
 ;############
