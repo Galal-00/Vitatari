@@ -70,9 +70,9 @@ DISPLAY_SPACE_HEALTH FUNCTION
 	LDRH R11, [R12]
 	
 	LDR R10, =BLACK	; SET COLOR
-	LDR R1, =6		; SET X1
+	LDR R1, =260		; SET X1
 	LDR R0, =6		; SET Y1
-	LDR R4, =63		; SET X2
+	LDR R4, =320		; SET X2
 	LDR R3, =23		; SET Y2
 	BL DRAW_RECTANGLE_FILLED
 	
@@ -136,6 +136,8 @@ DRAW_MONSTER FUNCTION
 	BL LCD_DATA_WRITE
 	
 	;=======USAGE=======
+	MOV R0,#85
+	MOV R3,#29
 	;MOV R0, X start
 	;MOV R3, Y start                                                                                                   
 	;BL DRAW_MONSTER
